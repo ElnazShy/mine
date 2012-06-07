@@ -1,0 +1,11 @@
+digraph G {
+"/world" -> "/openni_camera"[label="Broadcaster: /link_broadcaster\nAverage rate: 167.983 Hz\nMost recent transform: 0.001 sec old \nBuffer length: 4.959 sec\n"];
+"/openni_camera" -> "/openni_rgb_frame"[label="Broadcaster: /kinect_base_link1\nAverage rate: 10.136 Hz\nMost recent transform: -0.093 sec old \nBuffer length: 4.933 sec\n"];
+"/openni_depth_frame" -> "/openni_depth_optical_frame"[label="Broadcaster: /kinect_base_link2\nAverage rate: 10.135 Hz\nMost recent transform: -0.093 sec old \nBuffer length: 4.934 sec\n"];
+"/openni_camera" -> "/openni_depth_frame"[label="Broadcaster: /kinect_base_link\nAverage rate: 10.135 Hz\nMost recent transform: -0.093 sec old \nBuffer length: 4.934 sec\n"];
+"/openni_rgb_frame" -> "/openni_rgb_optical_frame"[label="Broadcaster: /kinect_base_link3\nAverage rate: 10.135 Hz\nMost recent transform: -0.093 sec old \nBuffer length: 4.934 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1339041632.892"[ shape=plaintext ] ;
+ }->"/world";
+}
