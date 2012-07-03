@@ -1,0 +1,26 @@
+ros.visualization.GridNode = ros.visualization.SceneNode.extend({
+  init: function() 
+  {
+      var vm = arguments[0];
+
+      if(arguments.length == 5){
+	  this.current_frame = arguments[1];
+	  this.size = arguments[2];
+	  this.resolution = arguments[3];
+	  this.color = arguments[4];
+      }
+      else{
+	  this.current_frame = "/odom_frame";
+	  this.size = 10;
+	  this.resolution = Math.random();
+	  this.color = [Math.random(), Math.random(), Math.random()];
+      }
+
+      this._super(vm);      
+      this.redraw=0;
+      this.model = new ros.visualization.GridModel(vm.gl, vm.shader_manager, this.size, this.resolution, this.color);
+      this.frame_id = this.current_frame;
+
+      this.keys={"current_frame":this.current_frame, "size":this.size, "resolution":this.resolution,"color":this.color};
+  },
+});

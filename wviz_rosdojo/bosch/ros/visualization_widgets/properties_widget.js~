@@ -1,0 +1,23 @@
+/* Halit Bener Suay - Fixed-Term - Bosch CR-RTC/NA
+ * 05/22/2012
+*/
+
+/* This widget will receive an existing node's
+ * properties and will show a dialog where you can
+ * modify them on the fly. Node properties are read
+ * from the object itself. Depending on the type of
+ * the property, this dialog show one or more of
+ * the below:
+ * - text input field
+ * - drop-down field
+ * - color-picker
+ * - number scrolling thingy (what is it called again?)
+*/
+
+Properties = Class.extend({
+    init: function() {
+	var tool = ['<div id="properties_dialog" title="Visualization Properties"><div id="visualization_properties"></div></div>'];
+	jquery.append(tool.join(''));
+	$("#properties_dialog").dialog({height: 450, width: 850});
+    },
+});
