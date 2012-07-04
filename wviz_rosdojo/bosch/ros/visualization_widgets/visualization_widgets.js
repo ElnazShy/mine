@@ -73,12 +73,12 @@ ros.visualization_widgets = ros.visualization_widgets || {};
 // include all urdf files at once
 //ros.include('visualization_widgets/visualization_widget_manager');
 ros.include('visualization_widgets/visualization_handler');
+ros.include('visualization_widgets/PropertiesWidget');
 /*
 ros.include('visualization_widgets/visualization_select_widget');
 ros.include('visualization_widgets/visualization_control_panel');
 ros.include('visualization_widgets/RobotModelWidget');
 ros.include('visualization_widgets/PointCloudWidget');
 ros.include('visualization_widgets/GridWidget');
-ros.include('visualization_widgets/PropertiesWidget');
 ros.include('visualization_widgets/frame_selector_widget');
 */

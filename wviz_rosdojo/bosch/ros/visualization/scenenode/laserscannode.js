@@ -34,7 +34,9 @@ ros.visualization.LaserScanNode = ros.visualization.SceneNode.extend({
     
     changeTopic: function(newTopic){
     	var that = this;
-    	that.model.node.unsubscribe(that.topic);
+    	that.model.node.unsubscribe(that.oldTopic);
+      console.log("changetopic");
+      console.log(that.oldTopic);
     	that.model.node.subscribe(newTopic,function(msg){ that.updateFromMessage(msg)});
 	that.oldTopic = that.topic;
 	that.topic = newTopic;

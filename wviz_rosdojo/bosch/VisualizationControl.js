@@ -197,11 +197,12 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
       return;
 
     var node = this.visHandler.getSceneNode(obj);
-    this.createPropertyTooltip(node);
+    this.createPropertyTooltip(node,obj.name);
   },
 
-  createPropertyTooltip : function(node)
+  createPropertyTooltip : function(node,name)
   {
+    /*
      var div = document.createElement('div');                                        
      var dd = document.createElement('strong');
      var d2 = document.createElement('label');
@@ -220,16 +221,58 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
      div.appendChild(propertySubmitButton.domNode);
                                                                                  
      this.connect(propertySubmitButton,"onClick","submitProperty");
+     */
      var dialog = new dijit.Dialog({refreshOnShow : true});
-     dialog.attr('content',div);
+     this.property = new ros.visualization_widgets.PropertiesWidget(node);
+     dialog.attr('content',this.property.getHtml(name));
+     dojo.style(dialog.domNode,"width","300px");
+     dojo.style(dialog.domNode,"height","400px");
+     dojo.style(dialog.domNode,"background","white");
+
+     var btn = dojo.byId(this.property.saveID);
+     this.connect(btn,"onclick","submitProperty");
+
+     var btn2 = dojo.byId(this.property.cancelID);
+     this.connect(btn2,"onclick","cancelProperty");
+     this.propertydialog = dialog;
+    
      dialog.startup();
      dialog.show();
   },
 
+  cancelProperty: function(event) {
+    this.propertydialog.hide();
+    this.propertydialog.destroy();
+  },
+
   submitProperty : function(event) {
+    this.property.onSave();
+    /*
     var obj = this.grid.selection.getSelected()[0];
     var node = this.visHandler.getSceneNode(obj);
     this.vm.changeTopic(node,this.frame_textbox.value);
+    */
+ //   this.property.button.remove();
+
+    var sn = this.property.sceneNode;
+
+			sn.model.mesh.destroy();
+			
+			for(var k in sn.keys){
+			    if(k == "current_frame"){
+				sn.setFrame(sn.keys[k]);
+			    }
+			    else if(k == "topic"){
+				if(sn.oldTopic != sn.topic){
+				    sn.changeTopic(sn.topic);
+				}
+			    }
+			    else{
+				eval('sn.model.'+k+'=sn.'+k);
+			    }
+			}
+			sn.model.load();
+
   },
 
   getDelete : function(event) {
