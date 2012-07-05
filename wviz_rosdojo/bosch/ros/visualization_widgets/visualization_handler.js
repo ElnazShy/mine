@@ -22,7 +22,7 @@ ros.visualization_widgets.VisualizationHandler = Class.extend({
 //          { name:"Axes",        type:"AxesNode"},
           { name:"Grid",        type:"GridNode"},
           { name:"LaserScan",   type:"LaserScanNode"},
-//          { name:"Map",         type:"MapNode"},
+          { name:"Map",         type:"MapNode"},
           { name:"PointCloud2", type:"PointCloudNode"}
               ];
     return list;

@@ -43,6 +43,7 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 	this.name = name;
   this.saveID = name + '_saveButton';
   this.cancelID = name + '_cancelButton';
+  console.log('here');
 	
 	// Just in case redraw was set to 1 previously reset it.
 	this.sceneNode.redraw=0;
@@ -54,17 +55,33 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 	    // Here iterate through the properties of the visualization widget and 
 	    // add appropriate form elements in the dialog's html
 	    // Let's begin from generating the title
-	    this.dialog_html= '<div id="'+name+'_dialog" title="'+name+'">';
+	    //this.dialog_html= '<div id="'+name+'_dialog" title="'+name+'">';
+
+      var dialog = document.createElement('div');
+      dialog.setAttribute('id',name+'_dialog');
+      dialog.setAttribute('title',name);
+      var css = document.createElement('style');
+      css.type = 'text/css';
+      css.innerHTML = '#leftpane {float: left; width: 330px; height: 200px;}#rightpane {float: left; width: 50px; height: 200px;}#form { width: 500px; height: 200px;}#label { float: left; width: 100px; }#textbox { float: left; width: 200px; }#picker { width: 0px; height: 0px; }#choosetopic {float: left; width: 30px; }#slide { width: 30px; height: 100px; }#palette { float: left; height: 20px; width: 20px; }';
+      dialog.appendChild(css);
 
 	    // Now let's go through the keys of whatever widget we are trying to show properties
 	    // and put a text box for those keys
 	    // console.debug(this.sceneNode.keys);
 
 	    // Start generating a form
-	    this.dialog_html=this.dialog_html+'<div id="form"> <form>';
+	    //this.dialog_html=this.dialog_html+'<div id="form"> <form>';
+      var formdiv = document.createElement('div');
+      var formform = document.createElement('form');
+      formdiv.setAttribute('id','form');
+      formdiv.appendChild(formform);
+      dialog.appendChild(formdiv);
 	    
 	    // Put the left pane here
-	    this.dialog_html=this.dialog_html+'<div id="leftpane">';
+	    //this.dialog_html=this.dialog_html+'<div id="leftpane">';
+      var leftpanediv = document.createElement('div');
+      leftpanediv.setAttribute('id','leftpane');
+      formform.appendChild(leftpanediv);
 	    
 	    for(var k in this.sceneNode.keys){
 		// k is the index string; the name of the property.
@@ -74,105 +91,161 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 		    // Convert object's color into hex
 		    var rgbInHex = this.sceneNode.color[2]*255 | ( this.sceneNode.color[1]*255<< 8) | (this.sceneNode.color[0]*255 << 16);
 
-		    // console.log("When generating the HTML rgbInHex:");
-		    // console.log(rgbInHex);
-		    // console.log(rgbInHex.toString(16))
-
-
 		    // Set palette color
 		    
-		    // I was going to use this but changed my mind
-		    //this.dialog_html=this.dialog_html +'<div id="label">'+ k + '</div> <div id="palette" style="background-color:#'+rgbInHex.toString(16)+'"></div>';
-
 		    // This input box is special, in that, it's not clickable (readonly)
 		    // and that its background color depends on the color of the vis. wdgt.
-		    this.dialog_html=this.dialog_html +'<div id="label">'+ k + '</div> <div id="textbox"> <input type="text" name="'+name+'_'+k+'_input" readonly="readonly" style="background-color:#'+rgbInHex.toString(16)+'; color:#'+rgbInHex.toString(16)+';" value="'+this.sceneNode.keys[k]+'"></div>';
-		    
+        var label = document.createElement('div');
+        label.setAttribute('id','label');
+        label.innerHTML = k;
+        
+        var textboxdiv = document.createElement('div');
+        textboxdiv.setAttribute('id','textbox');
+
+        var input = document.createElement('input');
+        input.setAttribute('type','text');
+        input.setAttribute('name',name + '_'+k+'_input');
+        input.setAttribute('readonly','readonly');
+        input.setAttribute('style',"background-color:#'+rgbInHex.toString(16)+'; color:#'+rgbInHex.toString(16)+';");
+        input.setAttribute('value',this.sceneNode.keys[k]);
+        input.style.backgroundColor = '#'+rgbInHex.toString(16);
+        input.style.color = '#'+rgbInHex.toString(16);
+        this.colorinput = input;
+        console.log(input);
+        textboxdiv.appendChild(input);
+
+        leftpanediv.appendChild(label);
+        leftpanediv.appendChild(textboxdiv);
 		}
 		else if( k == "topic"){
 		    // If the property of the widget is topic then put a small button next to it
 		    // When the user clicks on the button it will pop the list of available topics
-		    this.dialog_html=this.dialog_html +'<div id="label">'+ k + '</div> <div id="textbox"> <input type="text" name="'+name+'_'+k+'_input" value="'+this.sceneNode.keys[k]+'"> </div><div id="choosetopic"><button type="button", id="'+name+'_choose_topic_button", style="width:30px;">...</button></div>';
+        var label = document.createElement('div');
+        label.setAttribute('id','label');
+        label.innerHTML = k;
+
+        var textboxdiv = document.createElement('div');
+        textboxdiv.setAttribute('id','textbox');
+
+        var input = document.createElement('input');
+        input.setAttribute('type','text');
+        input.setAttribute('name',name + '_'+k+'_input');
+        input.setAttribute('value',this.sceneNode.keys[k]);
+        textboxdiv.appendChild(input);
+
+        leftpanediv.appendChild(label);
+        leftpanediv.appendChild(textboxdiv);
 		}
 		else{
-		    
 		    // If the property of the widget is not "color"
 		    // then just add its label and a textbox
-		    this.dialog_html=this.dialog_html +'<div id="label">'+ k + '</div> <div id="textbox"> <input type="text" name="'+name+'_'+k+'_input" value="'+this.sceneNode.keys[k]+'"> </div>';
+		    //this.dialog_html=this.dialog_html +'<div id="label">'+ k + '</div> <div id="textbox"> <input type="text" name="'+name+'_'+k+'_input" 
+        //  value="'+this.sceneNode.keys[k]+'"> </div>';
+
+        var label = document.createElement('div');
+        label.setAttribute('id','label');
+        label.innerHTML = k;
+
+        var textboxdiv = document.createElement('div');
+        textboxdiv.setAttribute('id','textbox');
+
+        var input = document.createElement('input');
+        input.setAttribute('type','text');
+        input.setAttribute('name',name + '_'+k+'_input');
+        input.setAttribute('value',this.sceneNode.keys[k]);
+        textboxdiv.appendChild(input);
+
+        leftpanediv.appendChild(label);
+        leftpanediv.appendChild(textboxdiv);
 		}
 	    }
 
-	    // Close the leftpane
-	    this.dialog_html=this.dialog_html + '</div>';
-
 	    // Put a rightpane here
-	    this.dialog_html=this.dialog_html+'<div id="rightpane">';
+	    //this.dialog_html=this.dialog_html+'<div id="rightpane">';
+      var rightpane = document.createElement('div');
+      rightpane.setAttribute('id','rightpane');
+      formform.appendChild(rightpane);
 
 	    if("color" in this.sceneNode.keys){
 		// Rainbow slide yay!
-		this.dialog_html=this.dialog_html +'<div id="picker"></div><div id="slide"></div>';
+      this.picker = document.createElement('div');
+      rightpane.setAttribute('id','picker');
+      rightpane.appendChild(this.picker);
+
+      this.slide = document.createElement('div');
+      rightpane.setAttribute('id','slide');
+      rightpane.appendChild(this.slide);
+        
 	    }
 	    
-	    // Close the rightpane
-	    this.dialog_html=this.dialog_html+'</div>';
-
   	    // Add a Save and a Cancel button and finish generating the div 
 	    // first </div> is for div class="form", id: name_properties_form
 	    // second </div> is for div id: name_properties_dialog
-	    this.dialog_html=this.dialog_html +'<button type="button", id="'+this.saveID+'"><center>Save</center></button> <button type="button", id="'+this.cancelID+'"><center>Cancel</center></button> </form> </div> </div>'; 
+      var saveButton = document.createElement('button');
+      saveButton.setAttribute('type','button');
+      saveButton.setAttribute('id',this.saveID);
+      saveButton.innerHTML = '<center>Save</center>';
+      dialog.appendChild(saveButton);
+
+      var cancelButton = document.createElement('button');
+      cancelButton.setAttribute('type','button');
+      cancelButton.setAttribute('id',this.cancelID);
+      cancelButton.innerHTML = '<center>Cancel</center>';
+      dialog.appendChild(cancelButton);
+
+      this.dialog_html = dialog;
+      this.dialog = dialog;
 	}	
-	
+  console.log(this.colorinput);
 	// If the scene node has a color property exposed,
 	// Open the color picker's rainbow slide here
+  var that = this;
 	if("color" in this.sceneNode.keys){
-	    ColorPicker(
-		document.getElementById('slide'),
+	    ColorPicker(this.slide,
 		
 		// old
 		//document.getElementById('palette');
 		
 		// new
 		// For the color textbox we don't have an id, so we get it by its name
-		document.getElementsByName(this.name+'_color_input')[0],
+		this.colorinput,
 		
 		function(hex, hsv, rgb) {
 		    
-		    //console.log("COLOR PICKER SAYS hex is:");
-		    //console.log(hex);
+		    console.log("COLOR PICKER SAYS hex is:");
+		    console.log(hex);
+        console.log(this.colorinput);
 
 		    
 		    //old
 		    //document.getElementById('palette').style.backgroundColor=hex;
-		    document.getElementsByName(this.name+'_color_input')[0].style.backgroundColor=hex;
+		    that.colorinput.style.backgroundColor=hex;
 		    
-		    document.getElementsByName(this.name+'_color_input')[0].style.color=hex;
-		    document.getElementsByName(this.name+'_color_input')[0].value=[Number(rgb.r/255), Number(rgb.g/255), Number(rgb.b/255)];
+		    that.colorinput.style.color=hex;
+		    that.colorinput.value=[Number(rgb.r/255), Number(rgb.g/255), Number(rgb.b/255)];
 		    
 		    //console.log(rgb);
 		    //ros_debug(Number(rgb.r/255));
 		    //ros_debug(Number(rgb.g/255));
 		    //ros_debug(Number(rgb.b/255));
 		    
-		    this.sceneNode.color = [Number(rgb.r/255), Number(rgb.g/255), Number(rgb.b/255)];
-		    this.sceneNode.redraw=1;
+		    that.sceneNode.color = [Number(rgb.r/255), Number(rgb.g/255), Number(rgb.b/255)];
+		    that.sceneNode.redraw=1;
 		}
 	    );
 	}	
+  console.log('done');
 	return this.dialog_html;
     },
 
     onOpen: function(){
 	
+  console.log('yoyo');
 	// Just in case redraw was set to 1 previously reset it.
 	this.sceneNode.redraw=0;
 
 	// Refresh the input text fields
 	for(var k in this.sceneNode.keys){
-	    console.log(this.name);
-	    console.log(k);
-	    console.log(this.sceneNode.keys[k]);
-
-	    
 	    if( k == "color"){
 
 		// Convert object's color into hex
@@ -185,16 +258,16 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 		
 		console.log("When opening the dialog RGB Color value converted in Hex");
 		console.log(rgbInHex)
-		
-		document.getElementsByName(this.name+'_'+k+'_input')[0].style.backgroundColor = "#"+rgbInHex;
-		document.getElementsByName(this.name+'_'+k+'_input')[0].style.color = "#"+rgbInHex;
-		document.getElementsByName(this.name+'_'+k+'_input')[0].value = this.sceneNode.keys[k];
+      this.colorinput.style.backgroundColor = "#"+rgbInHex;
+		  this.colorinput.style.color = "#"+rgbInHex;
+		  this.colorinput.value = this.sceneNode.keys[k];
 	    }
 	    else{
 		document.getElementsByName(this.name+'_'+k+'_input')[0].value = this.sceneNode.keys[k];
 	    }
 	    //console.log(document.getElementsByName(name+'_'+k+'_input')[0]);
 	}
+  console.log('yoyoyo');
     },
 
     onClose: function(){
@@ -202,6 +275,7 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
     },
 
     onSave: function(){
+	    console.log("asdfasdfasdfasdf");
 	
 	this.sceneNode.redraw=1;
 	
@@ -219,8 +293,9 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 	    //eval('this.sceneNode.'+this.sceneNode.keys[k]+'='+document.getElementsByName(name+'_'+k+'_input')[0].value);		    
 	    var my_eval_string = "this.sceneNode."+k+"=";
 	    
-	    //console.log("Spitting the current value of: "+name+"_"+k+"_input");
-	    //console.log(document.getElementsByName(name+'_'+k+'_input')[0]);
+      console.log(this.dialog_html);
+	    console.log("Spitting the current value of: "+this.name+"_"+k+"_input");
+	    console.log(document.getElementsByName(this.name+'_'+k+'_input'));
 	    console.log("ATTR NAME:");
 	    console.log(k);
 
@@ -262,11 +337,6 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
     
     onCancel: function(){
 	// What to do?
-    },
-    
-    getCSS: function(){
-	var myCSS = '<style type="text/css">#leftpane {float: left; width: 330px; height: 200px;}#rightpane {float: left; width: 50px; height: 200px;}#form { width: 500px; height: 200px;}#label { float: left; width: 100px; }#textbox { float: left; width: 200px; }#picker { width: 0px; height: 0px; }#choosetopic {float: left; width: 30px; }#slide { width: 30px; height: 100px; }#palette { float: left; height: 20px; width: 20px; }</style> <script type="text/javascript"src="js/ros/visualization_widgets/colorpicker.js"></script>';
-	return myCSS;
     },
     
 });

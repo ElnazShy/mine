@@ -23,6 +23,7 @@ var loadVisualizationModule = function(filename) {
 
 loadVisualizationModule("ros/common.js");
 loadVisualizationModule("ros/visualization/visualization.js");
+loadVisualizationModule("ros/visualization_widgets/colorpicker.js");
 loadVisualizationModule("spidergl/spidergl.js");
 loadVisualizationModule("ros/binaryparser/binaryparser.js");
 loadVisualizationModule("ros/b64codec/b64codec.js");

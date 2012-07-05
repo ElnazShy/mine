@@ -74,6 +74,7 @@ ros.visualization_widgets = ros.visualization_widgets || {};
 //ros.include('visualization_widgets/visualization_widget_manager');
 ros.include('visualization_widgets/visualization_handler');
 ros.include('visualization_widgets/PropertiesWidget');
+//ros.include('visualization_widgets/colorpicker.js');
 /*
 ros.include('visualization_widgets/visualization_select_widget');
 ros.include('visualization_widgets/visualization_control_panel');

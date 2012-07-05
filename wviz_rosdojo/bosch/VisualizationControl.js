@@ -48,6 +48,8 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
   },
 
   onOpen : function(url) {
+    this.addButton.setAttribute('disabled',false);
+    this.globalOptionButton.setAttribute('disabled',false);
   },
 
   createDatagrid : function() {
@@ -104,10 +106,10 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
         searchAttr: "name"
         },this.availAttach);
   
-      this.addButton = new dijit.form.Button({label:"Add"},this.addAttach);
+      this.addButton = new dijit.form.Button({label:"Add",disabled:true},this.addAttach);
       this.connect(this.addButton,"onClick","addNode");
   
-      this.globalOptionButton = new dijit.form.DropDownButton({label:"Global Option",
+      this.globalOptionButton = new dijit.form.DropDownButton({label:"Global Option",disabled:true,
                                                                   dropDownPosition:["above","after"]},this.globalOptionAttach);
     },
 
@@ -272,6 +274,8 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
 			    }
 			}
 			sn.model.load();
+
+      this.cancelProperty(event);
 
   },
 
