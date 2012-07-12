@@ -65,7 +65,8 @@ ros.visualization.PointCloud2Model = ros.visualization.Model.extend({
   // currently it only handles XYZ data
   updateFromMessage: function(msg) {
     console.log("received new point cloud message!");
-    this.pointcloud = decodeBase64(msg.data);
+    //this.pointcloud = decodeBase64(msg.data);
+    this.pointcloud = atob(msg.data);
     this.pointstep = msg.point_step;
     
     var num_points = msg.width * msg.height;
