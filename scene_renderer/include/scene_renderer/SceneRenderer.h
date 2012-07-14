@@ -26,45 +26,52 @@
 #ifndef _SCENERENDERER_H_
 #define _SCENERENDERER_H_
 
-typedef pcl::PointXYZRGB Point;
-typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloud;
+namespace scene_renderer {
 
-const std::string CLOUD_IN = "/camera/rgb/points";
-const std::string CLOUD_OUT = "cloud_out";
-const std::string MARKER_OUT = "patch_marker";
+  typedef pcl::PointXYZRGB Point;
+  typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloud;
 
-const std::string processing_frame ="/world";
 
-const std::string find_bounding_box_name = "/find_cluster_bounding_box2";
+  const std::string CLOUD_IN = "cloud_in";
+  const std::string CLOUD_OUT = "cloud_out";
+  const std::string MARKER_OUT = "patch_marker";
 
-class SceneRenderer
-{
-  private:
-    ros::NodeHandle nh;
-    ros::Publisher cloud_publisher;
-    ros::Publisher marker_publisher;
-//    ros::Publisher object_publisher;
-    ros::Subscriber cloud_sub;
-    ros::ServiceClient find_bounding_box_srv;
+  const std::string processing_frame ="/world";
 
-    tf::TransformListener tflistener;
+  const std::string find_bounding_box_name = "/find_cluster_bounding_box2";
+
+  class SceneRenderer
+  {
+    private:
+      ros::NodeHandle nh;
+      ros::Publisher cloud_publisher;
+      ros::Publisher marker_publisher;
+  //  ros::Publisher object_publisher;
+      ros::Subscriber cloud_sub;
+      ros::ServiceClient find_bounding_box_srv;
+
+      tf::TransformListener tflistener;
     
-    float patch_size;
-    std::vector<scene_renderer::Patch> patches;
+      float patch_size;
+      std::vector<scene_renderer::Patch> patches;
 
-    int min_cluster_size;
-    int max_cluster_size;
-    float cluster_distance;
+      int min_cluster_size;
+      int max_cluster_size;
+      float cluster_distance;
 
-    int patch_width;
-    int patch_height;
+      int patch_width;
+      int patch_height;
 
-  public:
-    SceneRenderer(int argc,char** argv);
+    public:
+      SceneRenderer(int argc,char** argv);
+      ~SceneRenderer();
 
-		void updateWorld(PointCloud::Ptr cloud);
-    void spin();
-    void processCloud(const sensor_msgs::PointCloud2::ConstPtr& msg);
+      // This function receives point cloud2, converts to pcl::pointcloud, and transform to world frame
+		  void updateWorld(PointCloud::Ptr cloud);
+      void spin();
 
-};
+      void processCloud(const sensor_msgs::PointCloud2::ConstPtr& msg);
+        void convertToWorldFrame(const sensor_msgs::PointCloud2::ConstPtr& msg,PointCloud::Ptr cloud);
+  };
+}
 #endif
