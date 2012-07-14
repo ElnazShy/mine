@@ -1,0 +1,15 @@
+<package>
+  <description brief="scene_octomap">
+
+     scene_octomap
+
+  </description>
+  <author>jihoonl</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/scene_octomap</url>
+  <depend package="roscpp"/>
+
+</package>
+
+
