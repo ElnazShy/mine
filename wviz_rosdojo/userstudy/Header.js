@@ -9,7 +9,6 @@ dojo.declare("userstudy.Header",dijit._Widget, {
 
   boardID : null,
   dialog : null,
-  interfaceList : [],
   launchService : '/laucher',
   interfaceFile : dojo.cache("userstudy","json/interface.json"),
 
@@ -32,11 +31,18 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     this.dialog = dialog;
 
     var board = dojo.byId(this.boardID);
-    dojo.style(board,"background","grey");
 
     dialog.startup();
     //dialog.show();
+    this.connectToServer();
+  },
 
+  connectToServer : function()
+  {
+    // connect to user study server
+    // listens to status of experiment
+    // based on status enable ready button. pop up the survery dialog
+    // and end the experiment
   },
 
   openDialog : function(event) {
@@ -49,7 +55,7 @@ dojo.declare("userstudy.Header",dijit._Widget, {
 
   createDialog : function() {
     var html = document.createElement('div');
-    console.log(this.interfaceList);
+    //console.log(this.interfaceList);
     for(i in this.interfaces.interfaces)
     {
       var btn = this.createButton(this.interfaces.interfaces[i].name);
@@ -73,36 +79,56 @@ dojo.declare("userstudy.Header",dijit._Widget, {
   {
     var selected = event.target.innerText; 
 
-    //console.log(this.interfaces.interfaces);
     for(i in this.interfaces.interfaces)
     {
       if(selected == this.interfaces.interfaces[i].name){ 
         break;
       }
     }
-    console.log(i);
+    selected = this.interfaces.interfaces[i];
 
     this.dialogHTML.removeChild(this.lastdiv);
 
     var div = document.createElement('div'); 
-    var iframe = this.createTutorial(this.interfaces.interfaces[i].tutorialurl);
-    div.appendChild(iframe);
     this.dialogHTML.appendChild(div);
-    this.lastdiv = div;
+    
+    var p = document.createElement('p');
+    p.innerHTML = selected.name + " is selected";
+    div.appendChild(p);
     //this.launchInterface(event.target.innerText);
-    this.createTutorial(selected);
-    //this.createReadyButton(selected);
-    //this.prepareInterface(selected);
+    this.createTutorial(div,selected);
+    this.createReadyButton(div,selected);
+    this.lastdiv = div;
+
+    this.prepareInterface(selected);
   },
 
-  createTutorial : function(url)
+  createTutorial : function(div,selected)
   {
     var iframe = document.createElement('iframe');
-    iframe.setAttribute('src',url);
+    iframe.setAttribute('src',selected.tutorialurl);
     iframe.setAttribute('width',420);
     iframe.setAttribute('height',315);
-    console.log(iframe);
-    return iframe;
+
+    //div.appendChild(iframe);
+  },
+
+  createReadyButton : function(div,selected)
+  { 
+    var btn = dijit.form.Button({label:"Ready",disabled:false});
+    this.readyButton = btn;
+    this.connect(this.readyButton,"onClick","closeDialog");
+    div.appendChild(this.readyButton.domNode);
+  },
+
+  closeDialog : function(event) {
+    this.dialog.hide();
+  },
+
+  prepareInterface : function(selected) {
+    var board = dojo.byId(this.boardID);
+    console.log(board);
+    board.innerHTML = selected.name;
   },
 
   launchInterface : function(name)
