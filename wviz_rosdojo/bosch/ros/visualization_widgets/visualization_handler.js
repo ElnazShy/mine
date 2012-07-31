@@ -19,11 +19,15 @@ ros.visualization_widgets.VisualizationHandler = Class.extend({
   createAvailNodeList : function() 
   {
     var list = [ 
-//          { name:"Axes",        type:"AxesNode"},
-          { name:"Grid",        type:"GridNode"},
-          { name:"LaserScan",   type:"LaserScanNode"},
-          { name:"Map",         type:"MapNode"},
-          { name:"PointCloud2", type:"PointCloudNode"}
+          { name:"Axes",              type:"AxesNode"},
+          { name:"Grid",              type:"GridNode"},
+          { name:"InteractiveMarker", type:"InteractiveMarkerNode"},
+          { name:"LaserScan",         type:"LaserScanNode"},
+          { name:"Map",               type:"MapNode"},
+          { name:"Marker",            type:"MarkerNode"},
+          { name:"PointCloud2",       type:"PointCloudNode"},
+          { name:"RobotModel",        type:"RobotModelNode"},
+          { name:"TF",                type:"TFNode"}
               ];
     return list;
   },
@@ -37,7 +41,7 @@ ros.visualization_widgets.VisualizationHandler = Class.extend({
 
   removeNode : function(node) {
     var id = this.currentNodeHash[node.name].nodeId;
-    this.vm.removeVisualizationNode(id);
+    this.vm.removeVisualizationNode(node);
   },
 
   getSceneNode : function(node) {

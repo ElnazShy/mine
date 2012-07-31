@@ -53,7 +53,7 @@ ros.visualization.Markers.MeshMarker = ros.visualization.Markers.Marker.extend({
     this.setFrame(msg.header.frame_id);
     this.mesh_resource = msg.mesh_resource;
 
-    var uri = this.mesh_resource.replace("package://","resources/");
+    var uri = this.mesh_resource.replace("package://",dojo.moduleUrl("bosch","resources/"));
     
     if (uri.substr(-4).toLowerCase() != ".dae") {
       ros_error("MeshMarker : " + uri + " is not a valid collada file!");

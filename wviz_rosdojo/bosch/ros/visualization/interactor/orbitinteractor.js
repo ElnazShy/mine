@@ -34,7 +34,18 @@
  *
  *********************************************************************/
 
-ros.visualization.OrbitInteractor = ros.visualization.Interactor.extend({
+/**                                                                                 
+ * Class that implements orbit interaction (rotating around a focal point, while always looking at that point)                              
+ * @class                                                                                     
+ * @augments ros.visualization.Interactor                                                                            
+ */
+ros.visualization.OrbitInteractor = ros.visualization.Interactor.extend(
+/** @lends ros.visualization.OrbitInteractor# */
+{
+
+	/**
+	 * Initialization funciton
+	 */
   init: function(camera) 
   {
     this._super(camera);
@@ -42,12 +53,17 @@ ros.visualization.OrbitInteractor = ros.visualization.Interactor.extend({
     this.interactorMatrix = this.trackball.matrix;
   },
   
+  /**
+   *Function that handles key strokes
+   * If R is passed the view is reset to the initial position
+   */
+
   keyDown : function(gl, keyCode, keyString) {
     if (keyString == "R") {
       this.trackball.reset();
       this.interactorMatrix = this.trackball.matrix;
     }
-    else if(keyString == "1") {
+    /*    else if(keyString == "1") {
       this.trackball.reset();
       this.interactorMatrix = this.trackball.matrix;
     }
@@ -91,13 +107,16 @@ ros.visualization.OrbitInteractor = ros.visualization.Interactor.extend({
       this.trackball.track(this.camera.viewMatrix,0,-Math.PI/2,0.0);
 
       this.interactorMatrix = this.trackball.matrix;
-    }
-
-
-
+      }*/
 
   },
 
+
+  /**                                                                                          
+   *Function that handles mouse interactions
+   * If the left buttion is down rotate
+   * If the middle button is down pan 
+   */
   mouseMove : function(gl, x, y, mouseButtonsDown, keysDown) {
     
     var ax1 = (x / (this.width - 1)) * 2.0 - 1.0;
@@ -117,6 +136,9 @@ ros.visualization.OrbitInteractor = ros.visualization.Interactor.extend({
     this.interactorMatrix = this.trackball.matrix;
   },
 
+  /**                                                                                          
+   * Function that handles mouse wheel interaction 
+   */
   mouseWheel : function(gl, wheelDelta, x, y, mouseButtonsDown, keysDown) {
     var action = (keysDown[16]) ? (SGL_TRACKBALL_SCALE)
         : (SGL_TRACKBALL_DOLLY);

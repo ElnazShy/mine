@@ -42,15 +42,12 @@ ros.visualization.LaserScanModel = ros.visualization.Model.extend({
     this.ranges = null;
     this.mesh = null;
     this.scene_viewer = sceneviewer;
-    this.bparser_big = new BinaryParser(true,false);
-    this.bparser_little = new BinaryParser(false,false);
+    this.bparser_big = new BinaryDecoder(true);
+    this.bparser_little = new BinaryDecoder(false);
     this.color = [1.0,0.0,0.0];
     this.attenuation = new Float32Array([0.01, 0.0, 0.003]);
     this.pointSize = 1.0;
-    //this.topic = laserscantopic;
     this.node = node;
-    //var that = this;
-    //that.node.subscribe(that.topic,function(msg){ that.updateFromMessage(msg)});
   },
 
   // currently it only handles XYZ data

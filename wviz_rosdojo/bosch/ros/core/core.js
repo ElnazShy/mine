@@ -1,4 +1,4 @@
-/**
+/*
 *  NodeHandle no longer can specify its own URL, instead it proxies whatever is specified in rosdojo
 */
 
@@ -64,9 +64,7 @@ ros.NodeHandle = Class.extend({
 			callback = arguments[2];
 			delay = arguments[3];
 		}
-		
-		ros.subscribe(topic, callback, delay, type);
-		
+
 		// Save the callback for unsubscribing
 		var callbacks = this.handlers[topic];
 		if (!callbacks) {
@@ -74,9 +72,13 @@ ros.NodeHandle = Class.extend({
 		}
 		callbacks.push(callback);
 		this.handlers[topic] = callbacks;
+
+		ros.subscribe(topic, callback, delay, type);
+
 	},
 	
 	unsubscribe: function(topic) {
+    console.log("unsubscribe ",topic);
 		var callbacks = this.handlers[topic];
 		if (callbacks) {
 			for (var i = 0; i < callbacks.length; i++) {
@@ -110,7 +112,7 @@ ros.NodeHandle = Class.extend({
 	},
 	
 	getParam: function(param, callback) {
-		console.log("CALLING A PARAMETER, NOT IMPLEMENTED");
+		ros.callService("/rosjs/get_param", JSON.stringify([param,0]), callback);
 	},
 	
 	waitForMessage: function(topic, timeout, callback) {

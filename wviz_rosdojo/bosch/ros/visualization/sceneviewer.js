@@ -46,6 +46,7 @@ ros.visualization.SceneViewer = Class.extend({
 	this.nodeMap = new ros.Map();
 	this.tf = null;
 	this.currentNodeId = 0;
+	// DEPRECATED
 	this.pickmanager = new ros.visualization.PickManager(this);
 	this.fixed_frame = "/base_link";
 	this.clear_color =[0.0,0.0,0.0,0.0];
@@ -68,48 +69,152 @@ ros.visualization.SceneViewer = Class.extend({
 
     addNode : function(node) {
 	var that = this;
+/*
+	console.log("Before - Node Id: ");
+	console.log(nodeId);
+	console.log("Before - this.currentNodeId: ");
+	console.log(this.currentNodeId);
+  */
 	
 	var nodeId = this.currentNodeId;
 	this.currentNodeId++;
-	
+/*
+	console.log("Node Id: ");
+	console.log(nodeId);
+	console.log("this.currentNodeId: ");
+	console.log(this.currentNodeId);
+	*/
 	function onloadNode(node) {
 	    var frame_id = node.frame_id;
 	    var innernode = that.nodeMap.find(frame_id);
-
+	    
 	    if(innernode == null)
 		innernode = new ros.Map();
 	    
-	    innernode.insert(nodeId,node);
+	    innernode.insert(nodeId,node); // FIXED nodeId to node.nodeId
 	    that.nodeMap.insert(frame_id,innernode);
 	    that.ui.requestDraw();
 
-	    ros_debug("Added a new inner node in the map:");
-	    console.log(innernode);
-	}	
+	    //console.log("addNode - Added a new inner node in the map:");
+	    //console.log(innernode);
+	    
+	    //console.log("ADD NODE - Current NodeMap Status:");
+	    //console.log(that.nodeMap);
+	}
 
+	
 	node.load(onloadNode, this);
 	return nodeId;
     },
 
     addNodeWithoutLoading : function(node) {
 	var frame_id = node.frame_id;
+	
+  /*
+	console.log("Before - Node Id: ");
+	console.log(nodeId);
+	console.log("Before - this.currentNodeId: ");
+	console.log(this.currentNodeId);
+*/
 	var nodeId = this.currentNodeId;
 	this.currentNodeId++;
-
+/*
+	console.log("Node Id: ");
+	console.log(nodeId);
+	console.log("this.currentNodeId: ");
+	console.log(this.currentNodeId);
+	*/
 	var innernode = this.nodeMap.find(frame_id);
 	if(innernode == null)
 	    innernode = new ros.Map();
 	
 	innernode.insert(nodeId,node);
 	this.nodeMap.insert(frame_id, innernode);
+	//console.log("addNodeWithoutLoading - Added a new inner node in the map:");
+	//console.log(innernode);
 	this.ui.requestDraw();
+
+	//console.log("ADD NODE WITHOUT LOADING - Current NodeMap Status:");
+	//console.log(this.nodeMap);
+    },
+    
+    updateNode: function(sourceNode){
+	// First get the indices of the node
+	var myOuterIndex = -1;
+	var myInnerIndex = -1;
+	for(var n=0; n<this.nodeMap.valArray.length;n++){
+	    for(var j=0;j<this.nodeMap.valArray[n].valArray.length;j++){
+		if(sourceNode.name == this.nodeMap.valArray[n].valArray[j].name){
+		    myOuterIndex = n;
+		    myInnerIndex = j;
+		}
+	    }
+	}
+	
+	// Then assign the updated node to that index
+        this.nodeMap.keyArray[myOuterIndex] = sourceNode.frame_id;	
+	this.nodeMap.valArray[myOuterIndex].keyArray[myInnerIndex] = sourceNode.frame_id;
+	var innernode = new ros.Map();
+	innernode.insert(0,sourceNode);
+	this.nodeMap.valArray[myOuterIndex].valArray[myInnerIndex] = innernode.valArray[0];
+
+	/*console.log("UPDATE NODE");
+	console.log(myOuterIndex);
+	console.log(myInnerIndex);
+	console.log(this.nodeMap);
+	console.log(innernode);
+  */
+
     },
 
+    removeNodeByName: function(sourceNode){
+	// First get the indices of the node
+	var myOuterIndex = -1;
+	var myInnerIndex = -1;
+	for(var n=0; n<this.nodeMap.valArray.length;n++){
+	    for(var j=0;j<this.nodeMap.valArray[n].valArray.length;j++){
+		if(sourceNode.name == this.nodeMap.valArray[n].valArray[j].name){
+		    myOuterIndex = n;
+		    myInnerIndex = j;
+		}
+	    }
+	}
+	
+	if(myOuterIndex != -1 && myInnerIndex != -1){
+    /*
+	    console.log("REMOVE NODE");
+	    console.log(sourceNode.name);
+	    console.log(this.nodeMap);
+	    console.log(this.nodeMap.valArray[myOuterIndex].valArray[myInnerIndex].name);
+	    console.log(myOuterIndex);
+	    console.log(myInnerIndex);
+	    
+	    console.log("BEFORE REMOVING");
+	    console.log(this.nodeMap);
+      */
+	    //this.nodeMap.keyArray[myOuterIndex] = "deleted";
+	    // If there are more than one inner node under the same key, don't delete the key
+	    //this.nodeMap.keyArray.splice(myOuterIndex,1);
+	    //var emptyInnerNode = new ros.Map();
+	    //this.nodeMap.valArray[myOuterIndex] = emptyInnerNode;
+	    this.nodeMap.valArray[myOuterIndex].keyArray.splice(myInnerIndex,1);
+	    this.nodeMap.valArray[myOuterIndex].valArray.splice(myInnerIndex,1);
+	    //console.log("AFTER REMOVING");
+	    //console.log(this.nodeMap);
+	    this.currentNodeId--;
+	    this.ui.requestDraw();
+	}
+    },
+    
     removeNode: function(nodeId) {
+
+	// OBSOLETE!!!
+	// USE REMOVE NODE BY NAME INSTEAD
+	
 	ros_debug("scene viewer is trying to remove:");
-	console.log(nodeId);
+	//console.log(nodeId);
 	var nodes = this.nodeMap.valSet();
-	console.log(nodes);
+	//console.log(nodes);
 	for(var n in nodes)
 	{
 	    // FIX-ME!!!
@@ -118,11 +223,10 @@ ros.visualization.SceneViewer = Class.extend({
 	    // That's why we can never delete the first visualization node
 	    // we add, UNLESS we manipulate the nodeId here by substracting 1.
 	    var node = nodes[n].find(nodeId-1);
-	    console.log(node);
+	    //console.log(node);
 	    if(node) {
 		//      node.remove();
 		nodes[n].remove(nodeId-1);
-		
 	    }
 	}
 	
@@ -158,13 +262,13 @@ ros.visualization.SceneViewer = Class.extend({
 	    this.puppetInteractor.reset();
 	    this.interactor2 = this.selectInteractor;
 	    this.interactor2.interactorMatrix = this.orbitInteractor.interactorMatrix;
-	    log('Orbit Interactor');
+	    console.log('Orbit Interactor');
 	}
 	else if(keyString == "S") {
 	    this.interactor2 = this.selectInteractor;
 	    this.interactor2.interactorMatrix = this.orbitInteractor.interactorMatrix;
 	    this.enableControls(true);
-	    log('Select Interactor');
+	    console.log('Select Interactor');
 	}/*
 	   else if(keyString == "I")
 	   {
@@ -287,13 +391,18 @@ ros.visualization.SceneViewer = Class.extend({
 
     getFixedFrameTransform : function(fixed_frame)
     {
-	if(!this.tf.tree)
+	if(!this.tf.tree) {
+    console.log("no tf tree");
 	    return;
+  }
 
 	var root_node = this.tf.tree.getRootNode();
 
 	if(!root_node)
+  {
+    console.log("no root node");
 	    return;
+  }
 
 	var world_frame = root_node.frame_id;
 	var matrix = this.tf.lookupTransformMartix(world_frame, fixed_frame);
@@ -307,7 +416,7 @@ ros.visualization.SceneViewer = Class.extend({
 
 	// TODO: this is a hack, it would be here if the resize event callback would work
 	// camera resizing was making overlay wrong.
-	this.resize(gl,w,h);
+//	this.resize(gl,w,h);
 
 
 	if(this.nodeMap.size() == 0)
@@ -425,7 +534,7 @@ ros.visualization.SceneViewer = Class.extend({
 	var h = this.ui.height;
 
 	// TODO: this is a hack, it would be here if the resize event callback would work
-        this.camera.resize(gl,w,h);
+  //      this.camera.resize(gl,w,h);
 
 	// remove previous selection
 	//    this.unSelectAll();

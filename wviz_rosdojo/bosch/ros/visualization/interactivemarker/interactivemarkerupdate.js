@@ -43,177 +43,259 @@ ros.visualization.InteractiveMarkers.Update = ros.visualization.InteractiveMarke
  */
 
 ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate = Class.extend({
-	/**
-	 * Initialization function
-	 * 
-	 * @param vm visualization manager
-	 * @param manager interactive marker manager
-	 * 
-	 */	
-  
-  init: function(vm,manager) {
-    this.vm = vm;
-    this.manager = manager;
-    this.topic;
-    this.server_id = "";
-    this.seq_num = 0;
-    this.iMarkerNodes = new ros.Map();
-    this.feedbacktoppic = "";
-  },
-
-  /**
-	 * Function that subscribes to interactive marker topic on the server
-	 * A call to this function saves two topic types the first is topic specified in imarker_topic and to the full topic specified as im_marker_topic+full
-	 * This function than subscribes to the full_topic
-	 * 
-	 * @param imarker_topic
-	 * 
-	 */	
-  subscribeInteractiveMarker: function(imarker_topic) {
-    // subscribe to interactive marker
-    var that = this;
-    var server_id = this.getStringID(imarker_topic);
-    this.full_topic = imarker_topic + '_full';
-    this.topic = imarker_topic;
-    this.server_id = server_id;
-    this.feedbacktopic = server_id + '/feedback';
-    this.vm.node.subscribe(this.full_topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
-  },
-
-  /**
-   * Function that handles incoming interactive marker messages
-   * 
-   * There are 3 types of interactive marker messages: KEEP_ALIVE, UPDATE, and INIT
-   * On receipt of an INIT message the markers are updated and the client unsubscribes from the full_topic and subscribes to the topic (see details of subscribeInteractiveMarker)
-   * On receipt of an UPDATE message the markers and poses are updated and markers are erased if necessary
-   * 
-   * @param msg 
-   */
-  receiveInteractiveMarkerMessage: function(msg) {
-    var types = ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate.Types;
-
-    var that = this;
-    var server_id = this.server_id;
-
-    if(msg.type == null || msg.type == "undefined") // init msg
-    {
-       ros_debug("server id = " + server_id + ": Init!");  
-       this.updateMarkers(msg.markers);                                                                     
-       this.vm.node.unsubscribe(this.full_topic);
-       this.vm.node.subscribe(this.topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
-       this.vm.scene_viewer.receivedInteractiveMarker();
-       return;
-    }
-
-    switch(msg.type) 
-    {
-      case types.KEEP_ALIVE:
-//        ros_debug("server id = " + server_id + ": Connection is alive!");  
-      break;
-      case types.UPDATE:
-        ros_debug("server id = " + server_id + " seq = " + msg.seq_num + ": Update!");  
-        this.updateMarkers(msg.markers);
-        this.updatePoses(msg.poses);
-        if(msg.erases.length != 0)
-          this.eraseMarkers(msg.erases);
-      break;
-      case types.INIT:
-        ros_debug("server id = " + server_id + ": Init!");  
-        this.updateMarkers(msg.markers);
-        this.vm.node.unsubscribe(this.full_topic);
-        this.vm.node.subscribe(this.topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
-      break;
-      default:
-        this.updateMarkers(msg.markers);
-    }
-
-    this.vm.scene_viewer.receivedInteractiveMarker();
-  },
-
-  /**
-   * Updates all markers in array
-   * 
-   * 
-   * @param markers array of marker messages
-   */
-  updateMarkers: function(markers) {
-    for(var i in markers)
-      this.updateMarker(markers[i]);
-
-  },
-  
-  /**
-   * Update marker from message
-   * 
-   * 
-   * @param marker_msg message containing marker info
-   */
-  updateMarker: function(marker_msg) {
-    var marker = this.iMarkerNodes.find(marker_msg.name); 
+    /**
+     * Initialization function
+     * 
+     * @param vm visualization manager
+     * @param manager interactive marker manager
+     * 
+     */	
     
-    if(marker != null) {
-      this.vm.scene_viewer.removeNode(marker.sceneview_node_id);
-      this.iMarkerNodes.remove(marker.name);
-    }
+    init: function(vm,manager) {
+	this.vm = vm;
+	this.manager = manager;
+	this.topic;
+	this.server_id = "";
+	this.seq_num = 0;
+	this.iMarkerNodes = new ros.Map();
+	this.feedbacktoppic = "";
+	this.markerList = [];
+    },
 
-    marker = new ros.visualization.InteractiveMarkers.InteractiveMarker(this.vm);
-    marker.feedbacktopic = this.feedbacktopic;
-    marker.updateFromMessage(marker_msg);  
-    node_id = this.vm.scene_viewer.addNode(marker);
-    marker.sceneview_node_id = node_id;
-    this.iMarkerNodes.insert(marker.name, marker);
-  },
+    /**
+     * Function that subscribes to interactive marker topic on the server
+     * A call to this function saves two topic types. The first is topic specified in imarker_topic and to the full topic specified as im_marker_topic+full
+     * This function then subscribes to the full_topic
+     * 
+     * @param imarker_topic
+     * 
+     */	
+    subscribeInteractiveMarker: function(imarker_topic,callback) {
+	console.log("interactive marker updater says: my topic is");
+	console.log(imarker_topic);
+	
+	if(imarker_topic !== null && imarker_topic !== undefined){
+	    // subscribe to interactive marker
+	    var that = this;
+	    var server_id = this.getStringID(imarker_topic);
+	    this.full_topic = imarker_topic + '_full';
+	    this.topic = imarker_topic;
+	    this.server_id = server_id;
+	    this.feedbacktopic = server_id + '/feedback';
+	    
+	    if(callback == null || callback == undefined){
+		this.vm.node.subscribe(this.full_topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
+	    }
+	    else{
+		this.vm.node.subscribe(this.full_topic, callback);
+	    }
+	}
+    },
 
-  /**
-   * Updates all poses from msg array
-   * 
-   * 
-   * @param poses array of pose messages
-   */
-  updatePoses: function(poses) {
-    for(var i in poses)
-      this.updatePose(poses[i]);
-  },
+    /**
+     * Function that handles incoming interactive marker messages
+     * 
+     * There are 3 types of interactive marker messages: KEEP_ALIVE, UPDATE, and INIT
+     * On receipt of an INIT message the markers are updated and the client unsubscribes from the full_topic and subscribes to the topic (see details of subscribeInteractiveMarker)
+     * On receipt of an UPDATE message the markers and poses are updated and markers are erased if necessary
+     * 
+     * @param msg 
+     */
+    receiveInteractiveMarkerMessage: function(msg) {
 
-  /**
-   * Update pose from message
-   * 
-   * 
-   * @param pose message containing pose info
-   */
-  updatePose: function(pose) {
-    var marker = this.iMarkerNodes.find(pose.name);
+	var types = ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate.Types;
 
-    if(marker)
-      marker.updateFromPoseMessage(pose);
-  },
-  
-  /**
-   * Erases specified markers
-   * 
-   * 
-   * @param erase_list list of markers to erase
-   */
-  eraseMarkers: function(erase_list) {
-    var name;
-    var node;
-    for(var i in erase_list)
+	var that = this;
+	var server_id = this.server_id;
+
+	if(msg.type == null || msg.type == undefined) // init msg
+	{
+	    // Here we received the full list of markers. 
+	    // Keep the list to make removal easire in the future.
+	    this.markerList = msg.markers;
+	    
+	    console.log("server id = " + server_id + ": Init!");  
+	    this.updateMarkers(msg.markers);                                                                     
+	    this.vm.node.unsubscribe(this.full_topic);
+	    this.vm.node.subscribe(this.topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
+	    this.vm.scene_viewer.receivedInteractiveMarker();
+	    return;
+	}
+
+	switch(msg.type) 
+	{
+	case types.KEEP_ALIVE:
+	    //        console.log("server id = " + server_id + ": Connection is alive!");  
+	    break;
+	case types.UPDATE:
+            console.log("server id = " + server_id + " seq = " + msg.seq_num + ": Update!");  
+            this.updateMarkers(msg.markers);
+            this.updatePoses(msg.poses);
+            if(msg.erases.length != 0)
+		this.eraseMarkers(msg.erases);
+	    break;
+	case types.INIT:	    
+            console.log("server id = " + server_id + ": Init!");  
+            this.updateMarkers(msg.markers);
+            this.vm.node.unsubscribe(this.full_topic);
+            this.vm.node.subscribe(this.topic, function(msg) { that.receiveInteractiveMarkerMessage(msg);});
+	    break;
+	default:
+            this.updateMarkers(msg.markers);
+	}
+
+	this.vm.scene_viewer.receivedInteractiveMarker();
+    },
+
+    /**
+     * Updates all markers in array
+     * 
+     * 
+     * @param markers array of marker messages
+     */
+    updateMarkers: function(markers) {
+	for(var i in markers)
+	    this.updateMarker(markers[i]);
+
+    },
+    
+    /**
+     * Update marker from message
+     * 
+     * 
+     * @param marker_msg message containing marker info
+     */
+    updateMarker: function(marker_msg) {
+	var marker = this.iMarkerNodes.find(marker_msg.name); 
+	
+	if(marker != null) {
+	    this.vm.scene_viewer.removeNodeByName(marker);
+	    this.iMarkerNodes.remove(marker.name);
+	}
+
+	marker = new ros.visualization.InteractiveMarkers.InteractiveMarker(this.vm);
+	marker.feedbacktopic = this.feedbacktopic;
+	marker.updateFromMessage(marker_msg);  
+	node_id = this.vm.scene_viewer.addNode(marker);
+	marker.sceneview_node_id = node_id;
+	this.iMarkerNodes.insert(marker.name, marker);
+    },
+
+    /**
+     * Updates all poses from msg array
+     * 
+     * 
+     * @param poses array of pose messages
+     */
+    updatePoses: function(poses) {
+	for(var i in poses)
+	    this.updatePose(poses[i]);
+    },
+
+    /**
+     * Update pose from message
+     * 
+     * 
+     * @param pose message containing pose info
+     */
+    updatePose: function(pose) {
+	var marker = this.iMarkerNodes.find(pose.name);
+
+	if(marker)
+	    marker.updateFromPoseMessage(pose);
+    },
+    
+    /**
+     * Erases specified markers
+     * 
+     * 
+     * @param erase_list list of markers to erase
+     */
+    eraseMarkers: function(erase_list) {
+	var name;
+	var node;
+	for(var i in erase_list)
+	{
+	    name = erase_list[i];
+	    node = this.iMarkerNodes.find(name);
+
+	    if(node != null) {
+		this.vm.scene_viewer.removeNodeByName(node);
+		this.iMarkerNodes.remove(name);
+	    }
+	}
+    },
+    eraseAllMarkers: function(){
+
+	// var marker = this.iMarkerNodes.find("pan_tilt");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("context_menu");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("quadrocopter");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("moving");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("6dof_random_axes");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("chess_piece");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("simple_6dof_fixed");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("view_facing");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("simple_6dof");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+	// var marker = this.iMarkerNodes.find("blinky");
+	// if(marker != null) {
+	//     this.vm.scene_viewer.removeNodeByName(marker);
+	//     this.iMarkerNodes.remove(marker.name);
+	// }
+
+	console.log("eraseAllMarkers says");
+	console.log("I have "+this.markerList.length+" markers to erase");
+	console.log("my markerList is:");
+	console.log(this.markerList);
+	for(var i=0; i < this.markerList.length; i++){
+
+	    var marker = this.iMarkerNodes.find(this.markerList[i].name);
+	    if(marker != null) {
+		this.vm.scene_viewer.removeNodeByName(marker);
+		this.iMarkerNodes.remove(marker.name);
+	    }
+	}
+    },
+    getStringID : function(server_id)
     {
-      name = erase_list[i];
-      node = this.iMarkerNodes.find(name);
-
-      if(node != null) {
-        this.vm.scene_viewer.removeNode(node.sceneview_node_id);
-        this.iMarkerNodes.remove(name);
-      }
+	var out = server_id.split("/")[1];
+	return out;
     }
-  },
-
-  getStringID : function(server_id)
-  {
-    var out = server_id.split("/")[1];
-    return out;
-  }
 });
 
 ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate.Types = {"INIT" : 2, "UPDATE" : 1, "KEEP_ALIVE" : 0};

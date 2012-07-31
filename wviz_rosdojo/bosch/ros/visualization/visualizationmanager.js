@@ -58,8 +58,30 @@ ros.visualization.VisualizationManager = Class.extend({
 	this.interactive_marker_manager = new ros.visualization.InteractiveMarkerManager(this);
     },
     
-    removeVisualizationNode: function(vis_node) {
-	this.scene_viewer.removeNode(vis_node);
+    removeVisualizationNode: function(sceneNode) {
+	// Some scene nodes have children and other internal nodes.
+	// We have to make sure that they are removed from the scene_viewer appropriately
+	console.log("visualization manager says:");
+	console.log(sceneNode);
+	if(sceneNode.msgType !== null && sceneNode.msgType !== undefined){
+	    console.log("msgType is not null or undefined");
+	    if(sceneNode.msgType == "visualization_msgs/InteractiveMarker"){
+		// Interactive Markers may have children. Let's make sure to remove all of them
+		console.log("we are trying to remove interactive markers");
+		sceneNode.interactiveMarkerManager.removeAllInteractiveMarkers();
+	    }
+	    else{
+		console.log("removing something other than an interactive marker");
+		// We use this block to remove nodes that are single
+		this.scene_viewer.removeNodeByName(sceneNode);
+	    }
+	}
+	else{
+	    console.log("removing something other than an interactive marker");
+	    // We use this block to remove nodes that are single
+	    this.scene_viewer.removeNodeByName(sceneNode);
+	}
+	
     },
 
     cleanTheScene: function() {
@@ -77,23 +99,64 @@ ros.visualization.VisualizationManager = Class.extend({
 	    // the following returns the scene_node for the widget
 	    var sn = this.addGrid();
 	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
 	    return sn;	    
 	}
 	else if(type=="PointCloudNode"){
 	    var sn = this.addPointCloud2();
 	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
 	    return sn;
 	}
 	else if(type=="LaserScanNode"){
 	    var sn = this.addLaserScan();
 	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
 	    return sn;
 	}
 	else if(type=="MapNode"){
 	    var sn = this.addMap();
 	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
 	    return sn;
 	}
+	else if(type=="RobotModelNode"){
+	    var sn = this.addRobotModel();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	else if(type=="TFNode"){
+	    var sn = this.addTF();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	else if(type=="AxesNode"){
+	    var sn = this.addCoordinateFrame();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	else if(type=="MarkerNode"){
+	    var sn = this.addMarker();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	else if(type=="InteractiveMarkerNode"){
+	    var sn = this.addInteractiveMarker();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	else if(type=="CameraNode"){
+	    var sn = this.addCameraFeed();
+	    this.scene_node_hash[name] = sn;
+	    sn.name = name;
+	    return sn;
+	}
+	
     },
 
     addNode : function(node) {
@@ -102,19 +165,31 @@ ros.visualization.VisualizationManager = Class.extend({
     },
     
     addCoordinateFrame: function(frame_id) {
-	var scene_node = new ros.visualization.CoordinateFrameNode(this);
-	scene_node.setFrame(frame_id);
-	this.scene_viewer.addNode(scene_node);
 
+	var scene_node = new ros.visualization.CoordinateFrameNode(this);
+	
+	// The following call orients the coordinate frame's axes.
+	scene_node.setOrientation();	
+
+	// If we are adding a coord. frame using the web interface then frame_id will be null	
+	if(frame_id != null && frame_id != undefined){
+	    scene_node.setFrame(frame_id);
+	}
+	
+	this.scene_viewer.addNode(scene_node);
+	
 	return scene_node;
     },
     
     addMarker: function(marker_topic) {
-	this.marker_manager.subscribeMarker(marker_topic);
+	console.log("Adding a marker");
+	var scene_node = new ros.visualization.MarkerNode(this,arguments);
+	return scene_node;
     },
 
     addInteractiveMarker: function(imarker_topic) {
-	this.interactive_marker_manager.subscribeInteractiveMarker(imarker_topic);
+	var scene_node = new ros.visualization.InteractiveMarkerNode(this,arguments);
+	return scene_node;
     },
     
     addTF: function() {
@@ -123,8 +198,11 @@ ros.visualization.VisualizationManager = Class.extend({
 	return tf_node;
     },
     
-    addRobotModel: function(urdf_xml,alpha) {
-	var robot_node = new ros.visualization.RobotNode(this, urdf_xml,alpha);
+    addRobotModel: function(urdf_xml,alpha,scaleFactor) {
+	// No need to check if the scaleFactor is passed in here. We check it in robotnode.js anyway.
+	console.log("addRobotModel - My scaleFactor is: "+scaleFactor);
+	//var robot_node = new ros.visualization.RobotNode(this, urdf_xml,alpha,scaleFactor);	
+	var robot_node = new ros.visualization.RobotNode(this, arguments);	
 	robot_node.load();
 	this.scene_viewer.addNodeWithoutLoading(robot_node);
 	robot_node.setBoundingBoxEnable(true);
@@ -221,6 +299,11 @@ ros.visualization.VisualizationManager = Class.extend({
 	var scene_node = new ros.visualization.LaserScanNode(this,arguments);
 	this.scene_viewer.addNode(scene_node);
 	scene_node.nodeId=this.scene_viewer.currentNodeId;
+	return scene_node;
+    },
+
+    addCameraFeed: function(){
+	var scene_node = new ros.visualization.CameraNode();
 	return scene_node;
     },
 

@@ -39,37 +39,46 @@
  * @augments Class
  */
 ros.visualization.InteractiveMarkerManager = Class.extend(
-/** @lends ros.visualization.InteractiveMarkerManager# */
-{
+    /** @lends ros.visualization.InteractiveMarkerManager# */
+    {
 	/**
 	 * Initialization function
 	 * 
 	 * @param vm visualization manager
 	 * 
 	 */	
-  init: function(vm) {
-    this.vm = vm;
-    this.updateMap = new ros.Map();
-//    this.requestsrv = vm.node.serviceClient("/interactive_marker_request");
-//    this.initsrv = vm.node.serviceClient("/interactive_marker_init_request");
-  },
+	init: function(vm) {
+	    this.vm = vm;
+	    this.updateMap = new ros.Map();
+	    this.updater = {};
+	    //    this.requestsrv = vm.node.serviceClient("/interactive_marker_request");
+	    //    this.initsrv = vm.node.serviceClient("/interactive_marker_init_request");
+	},
 
-  /**
+	/**
 	 * Function that subscribes to interactive marker topic on the server
 	 * 
 	 * @param imarker_topic
 	 * 
 	 */	
-  subscribeInteractiveMarker: function(imarker_topic) {
-    var update = new ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate(this.vm,this);
+	subscribeInteractiveMarker: function(imarker_topic, callback) {
+	    
+	    this.updater = new ros.visualization.InteractiveMarkers.InteractiveMarkerUpdate(this.vm,this);
+	    var that = this;
 
-    var that = this;
+	    // subscribe to interactive marker
+	    this.updater.subscribeInteractiveMarker(imarker_topic,callback);
+	  
+	    this.updateMap.insert(imarker_topic,this.updater);
+	    //    this.requestsrv.call(ros.json([imarker_topic,true]), function(resp) { that.initsrv.call(ros.json([resp.topic]),ros.nop)});
+	},
 
-    // subscribe to interactive marker
-    update.subscribeInteractiveMarker(imarker_topic);
-    this.updateMap.insert(imarker_topic,update);
-//    this.requestsrv.call(ros.json([imarker_topic,true]), function(resp) { that.initsrv.call(ros.json([resp.topic]),ros.nop)});
-  },
+	// When the user removes interactive markers from the visualization control panel this should be called
+	// to clear all the scene nodes
+	removeAllInteractiveMarkers: function(){
+	    console.log("interactive marker manager says: I'm calling eraseAllMarkers method of the updater");
+	    this.updater.eraseAllMarkers();
+	}
 
-});
+    });
 

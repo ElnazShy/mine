@@ -169,11 +169,11 @@ ros.visualization_widgets.PropertiesWidget = Class.extend({
 	    if("color" in this.sceneNode.keys){
 		// Rainbow slide yay!
       this.picker = document.createElement('div');
-      rightpane.setAttribute('id','picker');
+      this.picker.setAttribute('id','picker');
       rightpane.appendChild(this.picker);
 
       this.slide = document.createElement('div');
-      rightpane.setAttribute('id','slide');
+      this.slide.setAttribute('id','slide');
       rightpane.appendChild(this.slide);
         
 	    }

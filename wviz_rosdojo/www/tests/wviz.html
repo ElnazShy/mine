@@ -9,28 +9,8 @@
 <link rel="stylesheet" href="../../dojo17/dojox/grid/resources/claroGrid.css" />
 <link rel="stylesheet" href="../../dojo17/dojox/grid/resources/Grid.css" />
 <script src="../../dojo17/dojo/dojo.js"></script>
-<script type="text/javascript" src="jquery/jquery-latest.js"></script>
-<script type="text/javascript" src="jquery/jquery-latest.js"></script>
-<script type="text/javascript" src="jquery/jquery-ui-latest.js"></script>
-<script type="text/javascript" src="jquery/jquery.layout-latest.js"></script>
-<script type="text/javascript" src="jquery/themeswitchertool.js"></script>
-<script type="text/javascript" src="jquery/debug.js"></script>
 
 <script>
-   	function resize() {
-   		// Get the size of the window
-//   		var window_height = dojo.window.getBox().h;
-//   		console.log("window height is ", window_height);
-		
-		// Get the height of the headers
-//		var headers_height = dojo.marginBox(dojo.byId("headers")).h;
-//		console.log("headers height is ", headers_height);
-   		
-   		// Set the height of the list and visualization to be the remaining space
-//   		var calculated_height = window_height - headers_height;
-      //dijit.byId("
-   	}
-
 	/**
 	* The initialize method sets the URL paths to the modules we're using, so that
 	* dojo knows where to load files from correctly.  It also loads the widgets
@@ -53,10 +33,8 @@
 
       // Call the resize method to do a little bit of fancy layout. Most widgets
       // are capable of making themselves the right size, but we may need to lend help
-      resize();
         
       // Make it so that whenever the window is resized, so are our widgets
-      dojo.connect(window, "resize", resize);
     }
 
     dojo.ready(initialize);

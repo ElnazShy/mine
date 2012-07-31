@@ -33,8 +33,20 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************/
+/**
+ * Class that implements select interaction
+ *
+ *@class
+ *@augments ros.visualization.Interactor
+ */
 
-ros.visualization.SelectInteractor = ros.visualization.Interactor.extend({
+ros.visualization.SelectInteractor = ros.visualization.Interactor.extend(
+/** @lends ros.visualization.SelectInteractor# */
+{
+
+	/**
+	 *Initialization function
+	 */
   init: function(camera,sv) 
   {
     this._super(camera);
@@ -50,10 +62,15 @@ ros.visualization.SelectInteractor = ros.visualization.Interactor.extend({
     this.mouseLock = false;
   },
    
-  keyDown : function(gl, keyCode, keyString) {
+  /**
+   * Function that handles key input currently implemented
+   *
+   */
+    keyDown : function(gl, keyCode, keyString) {
   },
 
   // mode 1 : mouseMove, mode 2 : mouseUp
+
   callControlEvent : function(x, y, mouseButtonsDown, mode)
   {
     var mouse_ray = this.sceneviewer.getWorldRay(x,y) ; 
@@ -75,6 +92,12 @@ ros.visualization.SelectInteractor = ros.visualization.Interactor.extend({
     return sglInverseM4(matrix);
   },
 
+
+  /**
+   *Function that handles mouse interactions
+   *
+   *
+   */
   mouseMove : function(gl, x, y, mouseButtonsDown, keysDown) {
 
     if(this.mouseLock == true)
@@ -119,6 +142,10 @@ ros.visualization.SelectInteractor = ros.visualization.Interactor.extend({
   mouseWheel : function(gl, wheelDelta, x, y, mouseButtonsDown, keysDown) {
   },
 
+  /**
+   *
+   *
+   */
   mouseDown : function(gl, mouseButtonsDown,x,y, pickedNode) {
 //    var pickedNode = this.sceneviewer.pick(gl, mouseButtonsDown, x, y);
 

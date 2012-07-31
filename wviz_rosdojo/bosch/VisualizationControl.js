@@ -258,6 +258,7 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
 
     var sn = this.property.sceneNode;
 
+    if(sn.model != null || sn.model != undefined)
 			sn.model.mesh.destroy();
 			
 			for(var k in sn.keys){
@@ -273,6 +274,8 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
 				eval('sn.model.'+k+'=sn.'+k);
 			    }
 			}
+      
+    if(sn.model != null || sn.model != undefined)
 			sn.model.load();
 
       this.cancelProperty(event);

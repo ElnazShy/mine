@@ -16,7 +16,7 @@ dojo.declare("roswidgets.MJPEGViewerWrapper",[dijit._Widget, dijit._Templated], 
   height: 240,
 
   templateString : dojo.cache("roswidgets", "templates/MJPEGViewerWrapper.html"),
-  defaultUrls: [ "http://merry:8080/stream?topic=/camera/rgb/image_color?width=320?height=240"],
+  defaultUrls: [ "http://merry:8080/stream?topic=/kinect_head/rgb/image_color?width=320?height=240"],
 
   postCreate : function() {
     dojo.addClass(this.domNode,"mjpegviewer");

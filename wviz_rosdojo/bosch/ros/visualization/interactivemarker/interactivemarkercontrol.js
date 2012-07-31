@@ -396,7 +396,7 @@ ros.visualization.InteractiveMarkers.InteractiveMarkerControl = ros.visualizatio
         break;
       default:
         ros_debug('mode : ' + this.interaction_mode + ' is not implemented yet');
-        log('mode : ' + this.interaction_mode + ' is not implemented yet');
+	// log('mode : ' + this.interaction_mode + ' is not implemented yet');
         break;
     }
   },
@@ -472,7 +472,7 @@ ros.visualization.InteractiveMarkers.InteractiveMarkerControl = ros.visualizatio
     var intersect_2d;
 
     var dist = plane.intersectRay(ray);
-    log('dist =  ' + dist);
+    //    log('dist =  ' + dist);
 
     if(dist != null)
     {

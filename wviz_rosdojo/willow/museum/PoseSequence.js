@@ -2,8 +2,9 @@ dojo.provide("museum.PoseSequence");
 
 dojo.require("dijit._Widget");
 dojo.require("museum.PoseSequenceEntry");
+dojo.require("dijit.layout.ContentPane");
 
-dojo.declare("museum.PoseSequence", dijit._Widget, {
+dojo.declare("museum.PoseSequence", [dijit._Widget, dijit.layout.ContentPane], {
 	
 	// Internal variables
 	poses: null,

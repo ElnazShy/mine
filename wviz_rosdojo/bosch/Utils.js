@@ -5,6 +5,12 @@ var link = document.createElement('link');
 link.rel = "stylesheet";
 link.href = dojo.moduleUrl("bosch", "css/bosch.css");
 document.body.appendChild(link);
+var link2 = document.createElement('link');
+link2.rel = "stylesheet";
+
+link2.href = dojo.moduleUrl("bosch", "css/rightcontext.css");
+document.body.appendChild(link2);
+
 /*
 link.href = dojo.moduleUrl("dojox", "grid/resources/Grid.css");
 document.body.appendChild(link);
@@ -25,8 +31,7 @@ loadVisualizationModule("ros/common.js");
 loadVisualizationModule("ros/visualization/visualization.js");
 loadVisualizationModule("ros/visualization_widgets/colorpicker.js");
 loadVisualizationModule("spidergl/spidergl.js");
-loadVisualizationModule("ros/binaryparser/binaryparser.js");
-loadVisualizationModule("ros/b64codec/b64codec.js");
+loadVisualizationModule("ros/binaryparser/binary_decoder.js");
 
 dojo.declare("bosch.Utils", null, {});
 

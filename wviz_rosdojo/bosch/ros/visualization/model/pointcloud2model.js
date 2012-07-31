@@ -34,143 +34,136 @@
  *********************************************************************/
 
 ros.visualization.PointCloud2Model = ros.visualization.Model.extend({
-  init: function(gl, shader_manager, sceneviewer,node) 
-  {
-    this._super(gl,shader_manager);
-    this.prog = shader_manager.shaderPrograms[shader_manager.ShaderTypes.POINT_CLOUD];
-    //this.prog = shader_manager.shaderPrograms[shader_manager.ShaderTypes.SIMPLE];
-    this.renderer = new SglMeshGLRenderer(this.prog); 
-    this.pointcloud = null;
-    this.mesh = null;
-    this.pointstep = null;
-    this.scene_viewer = sceneviewer;
-    this.bparser_big = new BinaryParser(true,false);
-    this.bparser_little = new BinaryParser(false,false);
-    this.color = [1.0,0.0,0.0];
-    this.attenuation = new Float32Array([0.01, 0.0, 0.003]);
-    this.pointSize = 1.0;
-      this.node = node;
-    //this.topic = pointcloudtopic;
+    init: function(gl, shader_manager, sceneviewer,node) 
+    {
+	this._super(gl,shader_manager);
+	this.prog = shader_manager.shaderPrograms[shader_manager.ShaderTypes.POINT_CLOUD];
+	//this.prog = shader_manager.shaderPrograms[shader_manager.ShaderTypes.SIMPLE];
+	this.renderer = new SglMeshGLRenderer(this.prog); 
+	this.pointcloud = null;
+	this.mesh = null;
+	this.pointstep = null;
+	this.scene_viewer = sceneviewer;
+	this.bparser_big = new BinaryDecoder(true);
+	this.bparser_little = new BinaryDecoder(false);
+	this.color = [1.0,0.0,0.0];
+	this.attenuation = new Float32Array([0.01, 0.0, 0.003]);
+	this.pointSize = 1.0;
+	this.node = node;
+    },
+
+    // currently it only handles XYZ data
+    updateFromMessage: function(msg) {
+	console.log("received new point cloud message!");
+	this.pointcloud = atob(msg.data);
+	this.pointstep = msg.point_step;
+	
+	var num_points = msg.width * msg.height;
+	var points = this.pointcloud;
+	var point_step = this.pointstep;
+	var length = points.length;
+	console.log("point cloud length is:");
+	console.log(points.length);
+	var positions = [];
+	var colors = [];
+	var x,y,z;
+	var r,g,b;
+	var parser = null;
+	var i,j,k,l;
+	var is_rgb = false;
+	var rgb;
+
+	for(i = 0; i < msg.fields.length; i++) 
+	    if(msg.fields[i].name == "rgb")
+		is_rgb = true;
+
+	if(msg.is_bigendian == false)
+	    parser = this.bparser_little;
+	else 
+	    parser = this.bparser_big;
+
+	for(i=0,j=0,k=0, l=length; i < l; i+=point_step) {      
+	    x = this.extractFloat(i,points,parser);
+	    y = this.extractFloat(i+4,points,parser);
+	    z = this.extractFloat(i+8,points,parser);
+	    
+	    positions[j++] = x;
+	    positions[j++] = y;
+	    positions[j++] = z;
+
+
+	    if(is_rgb) {
+		rgb = parser.toInt(points.slice(i+16,i+20));
+		r = ((rgb >> 16) & 0xff);
+		g = ((rgb >> 8) & 0xff);
+		b = ((rgb) & 0xff);
+		colors[k++] = r/255; 
+		colors[k++] = g/255; 
+		colors[k++] = b/255;
+	    }
+	    else {
+		colors[k++] = 1.0;
+		colors[k++] = 0;
+		colors[k++] = 0;
+	    }
+	}
+
+  if(length > 0) {
+	  var mesh = new SglMeshGL(this.gl);
+	  mesh.addVertexAttribute("position", 3, new Float32Array(positions));
+	  mesh.addVertexAttribute("color", 3, new Float32Array(colors));
+	  mesh.addArrayPrimitives("vertices", this.gl.POINTS, 0, num_points);
+	  mesh.primitives = "vertices";
+	  this.mesh = mesh;
+  }
+  else this.mesh = null;
+
+    },
+
+    extractFloat : function(index,points,parser)
+    {
+	var ps = points.slice(index,index+4);
+	var p  = parser.toFloat(ps);
+
+	return p;
+    },
     
-    //var that = this;
-    //that.node.subscribe(that.topic,function(msg){ that.updateFromMessage(msg)});
-  },
+    load: function (callback, scene_viewer)
+    {
+	var positions = new Float32Array([-0.27104,0.20824,0.47563,
+					  0.47547,0.20872,0.47609,
+					  -0.27143,0.21244,0.47213]);
+	var colors = new Float32Array([1.0,0,0,
+                                       1.0,0,0,
+                                       1.0,0,0]);
+	var num_points = 3;
+	this.mesh = new SglMeshGL(this.gl);
+	this.mesh.addVertexAttribute("position", 3, positions);
+	this.mesh.addVertexAttribute("color", 3, colors);
+	this.mesh.addArrayPrimitives("vertices", this.gl.POINTS, 0, num_points);
+	this.mesh.primitives = "vertices";
+	
+	//    // update bounding box 
+	//    this.updateBoundingBox(positions);
+	
+	var async = (callback) ? (true) : (false);
+	if (async) {
+	    callback(this);
+	}
+	
+    },
 
-    // changeTopic: function(newTopic){
-    // 	var that = this;
-    // 	that.node.unsubscribe(that.topic);
-    // 	that.node.subscribe(newTopic,function(msg){ that.updateFromMessage(msg)});
-    // },
+    draw: function (gl, xform)
+    {
+      if(this.mesh == null) return;
+	var uniforms = { u_mvp : xform.modelViewProjectionMatrix, u_mv : xform.modelViewMatrix, u_pointsize : this.pointSize, u_attenuation : this.attenuation};
 
-  // currently it only handles XYZ data
-  updateFromMessage: function(msg) {
-    console.log("received new point cloud message!");
-    //this.pointcloud = decodeBase64(msg.data);
-    this.pointcloud = atob(msg.data);
-    this.pointstep = msg.point_step;
+	gl.disable(gl.BLEND);
+	gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
+	sglRenderMeshGLPrimitives(this.mesh, "vertices", this.prog, null, uniforms); 
+	gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
+	
+    },
     
-    var num_points = msg.width * msg.height;
-    var points = this.pointcloud;
-    var point_step = this.pointstep;
-    var length = points.length;
-    console.log("point cloud length is:");
-    console.log(points.length);
-    var positions = [];
-    var colors = [];
-    var x,y,z;
-    var r,g,b;
-    var parser = null;
-    var i,j,k,l;
-    var is_rgb = false;
-    var rgb;
-
-    for(i = 0; i < msg.fields.length; i++) 
-      if(msg.fields[i].name == "rgb")
-        is_rgb = true;
-
-    if(msg.is_bigendian == false)
-      parser = this.bparser_little;
-    else 
-      parser = this.bparser_big;
-
-    for(i=0,j=0,k=0, l=length; i < l; i+=point_step) {      
-      x = this.extractFloat(i,points,parser);
-      y = this.extractFloat(i+4,points,parser);
-      z = this.extractFloat(i+8,points,parser);
-      
-      positions[j++] = x;
-      positions[j++] = y;
-      positions[j++] = z;
-
-
-      if(is_rgb) {
-        rgb = parser.toInt(points.slice(i+16,i+20));
-        r = ((rgb >> 16) & 0xff);
-        g = ((rgb >> 8) & 0xff);
-        b = ((rgb) & 0xff);
-        colors[k++] = r/255; 
-        colors[k++] = g/255; 
-        colors[k++] = b/255;
-      }
-      else {
-        colors[k++] = 1.0;
-        colors[k++] = 0;
-        colors[k++] = 0;
-      }
-    }
-
-    var mesh = new SglMeshGL(this.gl);
-    mesh.addVertexAttribute("position", 3, new Float32Array(positions));
-    mesh.addVertexAttribute("color", 3, new Float32Array(colors));
-    mesh.addArrayPrimitives("vertices", this.gl.POINTS, 0, num_points);
-    mesh.primitives = "vertices";
-    this.mesh = mesh;
-
-  },
-
-  extractFloat : function(index,points,parser)
-  {
-    var ps = points.slice(index,index+4);
-    var p  = parser.toFloat(ps);
-
-    return p;
-  },
-   
-  load: function (callback, scene_viewer)
-  {
-    var positions = new Float32Array([-0.27104,0.20824,0.47563,
-                                       0.47547,0.20872,0.47609,
-                                      -0.27143,0.21244,0.47213]);
-    var colors = new Float32Array([1.0,0,0,
-                                   1.0,0,0,
-                                   1.0,0,0]);
-    var num_points = 3;
-    this.mesh = new SglMeshGL(this.gl);
-    this.mesh.addVertexAttribute("position", 3, positions);
-    this.mesh.addVertexAttribute("color", 3, colors);
-    this.mesh.addArrayPrimitives("vertices", this.gl.POINTS, 0, num_points);
-    this.mesh.primitives = "vertices";
-    
-//    // update bounding box 
-//    this.updateBoundingBox(positions);
-    
-    var async = (callback) ? (true) : (false);
-    if (async) {
-      callback(this);
-    }
-    
-  },
-
-  draw: function (gl, xform)
-  {
-    var uniforms = { u_mvp : xform.modelViewProjectionMatrix, u_mv : xform.modelViewMatrix, u_pointsize : this.pointSize, u_attenuation : this.attenuation};
-
-    gl.disable(gl.BLEND);
-    gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
-    sglRenderMeshGLPrimitives(this.mesh, "vertices", this.prog, null, uniforms); 
-    gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
-    
-  },
-  
 });
 

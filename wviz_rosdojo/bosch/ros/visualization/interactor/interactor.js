@@ -34,8 +34,17 @@
  *
  *********************************************************************/
 
-
+/**
+ * Class that handles generic interaction in the scene 
+ * @class
+ * @augments Class
+ */
 ros.visualization.Interactor = Class.extend({
+
+	/**
+	 * Initialization function
+	 * 
+	 */	
   init: function(camera) 
   {
     this.camera = camera;
@@ -44,6 +53,7 @@ ros.visualization.Interactor = Class.extend({
     this.interactorMatrix = sglIdentityM4();
   },
    
+
   keyDown : function(gl, keyCode, keyString) {
   },
 

@@ -9,11 +9,11 @@ dojo.require("dijit._Widget");
 dojo.declare("bosch.Visualization", dijit._Widget, {
 	
 	// Optional parameters
-	tf_topic: "/tf_changes",
+	tf_topic: "/tf",
 	fixed_frame: "/odom_combined",
 	urdf: dojo.moduleUrl("bosch", "resources/pr2_description/pr2_urdf.xml"),
-	width: 800,
-	height: 600,
+	width: 640,
+	height: 480,
 	
 	postCreate: function() {
 		dojo.addClass(this.domNode, "robot-visualization");
@@ -31,16 +31,20 @@ dojo.declare("bosch.Visualization", dijit._Widget, {
 		this.tf = new ros.tf.TransformListener(this.nodeHandle, this.tf_topic);
 		this.vm = new ros.visualization.VisualizationManager(this.canvas.id);
 		this.vm.initialize(this.nodeHandle, this.tf); 
-
 		this.vm.scene_viewer.fixed_frame = this.fixed_frame;
 
-//		this.vm.addGrid(this.fixed_frame, 10.0, 1.0);
-
-		this.robot_model = this.vm.addRobotModel(this.urdf);
-				
+    this.connect(ros, "onOpen", "addNodes");
+		this.vm.addGrid(this.fixed_frame, 10.0, 1.0);
   	this.connect(ros, "onOpen", "refreshRobot");
-		this.periodicallyRefresh();
 	},
+
+  addNodes : function() {
+
+		//this.robot_model = this.vm.addRobotModel(this.urdf);
+    this.vm.addInteractiveMarker("/basic_controls/update");
+		//this.periodicallyRefresh();
+             
+  },
 	
 	setHeight: function(height) {
 		this.height = height;
@@ -64,14 +68,16 @@ dojo.declare("bosch.Visualization", dijit._Widget, {
 	},
 	
 	periodicallyRefresh: function() {
+    console.log("here");
 		this.refreshRobot();
-		window.setTimeout(dojo.hitch(this, "periodicallyRefresh"), 30000);
+		window.setTimeout(dojo.hitch(this, "periodicallyRefresh"), 10000);
 	},
 	
 	refreshRobot: function() {
-		if (ros.available()) {
+		//if (ros.available()) {
+      console.log("Updating TF");
 			ros.callService("/wviz_tf_manager/publish_all_transforms", "[]", function() {});
-		}
+		//}
 	},
 	
 	// Returns a data URI of the image

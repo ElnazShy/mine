@@ -33,7 +33,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************/
-
+/**
+ * @class ArrowModel
+ * @brief Class for the model of an arrow.
+ * @details (generally used when visualizing coordinate frames or markers).
+ */
 ros.visualization.ArrowModel = ros.visualization.Model.extend({
   init: function(gl, shader_manager) 
   {

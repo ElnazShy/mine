@@ -1,24 +1,26 @@
+/**
+ * @class LaseScanNode
+ * @brief Class that keeps laser scan visualization properties. 
+ * @details An instance of this class keeps necessary values to visualize a laser scanner in wviz.
+ */
 ros.visualization.LaserScanNode = ros.visualization.SceneNode.extend({
+
+    /**
+     * Constructor.
+     * @param vm visualization manager. An instance of the class defined in rosjs_visualization/js/visualization/visualizationmanager.js.
+     * @param args An array of arguments to pass in the constructor. args[0]: current_frame (e.g. /odom_combined or /base_link). args[1]: topic that publishes a message of type sensor_msgs/LaserScan.
+     */
     init: function(vm,args) 
     {
-	console.log("LASERSCANNODE ARGUMENTS");
-	console.log(vm);
-	console.log(args);
-
-	
-	
-	if(args.length == 1){
+	if(args.length == 2){
 	    this.current_frame = args[0];
 	    this.topic = args[1];
 	}
 	else{
-	    console.log("NO ARGUMENTS PASSED IN TO LASERSCANNODE");
+	    
 	    this.current_frame = "/odom_combined";
 	    this.topic = "";
 	}
-
-	console.log("LASERSCANNODE'S SUPER IS");
-	console.log(vm);
 
 	this._super(vm);      
 	this.redraw=0;
@@ -28,25 +30,33 @@ ros.visualization.LaserScanNode = ros.visualization.SceneNode.extend({
 	this.model.node.subscribe(this.topic, function(msg){ this.updateFromMessage(msg)});
 	this.frame_id = this.current_frame;
 	this.oldTopic = "";
+	this.msgType = "sensor_msgs/LaserScan";
 	// Which attributes of this widget should be accessible from PropertiesWidget?
-	this.keys={"current_frame":this.current_frame, "topic":this.topic};
+	this.keys={"frame_id":this.frame_id, "topic":this.topic};
+	this.name="";
     },
-    
+    /**
+     * Unsubsribe from the old topic and subsribe to a new topic.
+     * @param newTopic the new topic to which we would like to subscribe.
+     */
     changeTopic: function(newTopic){
     	var that = this;
-    	that.model.node.unsubscribe(that.oldTopic);
-      console.log("changetopic");
-      console.log(that.oldTopic);
+    	that.model.node.unsubscribe(that.topic);
     	that.model.node.subscribe(newTopic,function(msg){ that.updateFromMessage(msg)});
 	that.oldTopic = that.topic;
 	that.topic = newTopic;
     },
-
+    /**
+     * Unsubscribe from 'topic'
+     */
     unsub: function(){
 	var that = this;
 	that.model.node.unsubscribe(that.topic);
     },
-    
+    /**
+     * Gets the message in, manipulates or extracts information from it, then passes it back to interactive marker manager's updater object.
+     * @param msg a ROS message of type visualization_msgs/InteractiveMarker
+     */
     updateFromMessage: function(msg) 
     {
 	this.setFrame(msg.header.frame_id);

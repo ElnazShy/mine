@@ -6,7 +6,6 @@ dojo.require("dijit._Templated");
 dojo.require("museum.Utils");
 dojo.require("museum.common.RobotPose");
 
-dojo.require("museum.Thumbnailer");
 
 /**
  * The museum.RobotPose class represents a single robot pose entry in the robot pose list.

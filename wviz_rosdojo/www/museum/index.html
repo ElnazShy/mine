@@ -42,7 +42,7 @@
 		// Now specify the main widgets in the page
         dojo.require("roswidgets.ConnectionPanel");
         dojo.require("bosch.Visualization");
-        dojo.require("museum.PoseSequence");     
+        dojo.require("museum.PoseTabWrapper");     
         dojo.require("museum.KorgNanokontrol");
         
         // Parse the page.  This creates widgets in place of the <div> tags below
@@ -63,6 +63,7 @@
    		var sequence = dijit.byId("sequence-widget");
    		var visualization = dijit.byId("visualization-widget");
    		
+      /*
    		// Subscribe to the korg controller.  Whenever the record button is pressed,
    		// add a new pose to the pose sequence
         ros.subscribe("/korg_joy", function(korgState) {
@@ -72,7 +73,7 @@
         			sequence.addPose(korgState, imgPreview);
         		});
         	} 	        	
-        });      
+        });  */    
    	}
    	dojo.ready(initialize);
    </script>
@@ -83,7 +84,7 @@
 		<img src="cartoon.png" class="cartoon">
 		<div dojoType="roswidgets.ConnectionPanel" id=></div>
 	</div>
-	<div dojoType="museum.PoseSequence" id="sequence-widget"></div>
+	<div dojoType="museum.PoseTabWrapper" id="sequence-widget"></div>
 	<div dojoType="bosch.Visualization" id="visualization-widget"></div>
 	<div class="clear"></div>
 	<div dojoType="museum.KorgNanokontrol" id="nanokontrol-widget"></div>

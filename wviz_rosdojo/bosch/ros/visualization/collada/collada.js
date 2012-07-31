@@ -161,12 +161,13 @@ function ColladaScene() {
 }
 
 function ColladaDocument() {
-  this.unitScale            = 1.0;
-	this.geometries           = { };
-	this.textures             = { };
-	this.materials            = { };
-	this.instanceVisualScenes = { };
-	this.scenes               = { };
+    this.unitScale            = 1.0;
+    this.scaleFactor = 1.0; // unitScale is multiplied by the scaleFactor to obtain the scale with which the model will be visualized. E.g. if in the .dae model is generated with 0.01 scale and the user passes in 100 as scaleFactor then the visualization scale becomes 0.01*100 = 1.0; This gives the flexibility to adjust scales for different people's .dae models without requiring to modify the .dae file itself.
+    this.geometries           = { };
+    this.textures             = { };
+    this.materials            = { };
+    this.instanceVisualScenes = { };
+    this.scenes               = { };
 }
 
 function getColladaArray(domRoot, domArray, collada, parseFunc) {
@@ -217,17 +218,17 @@ function getColladaFloatArray(domRoot, domArray, collada) {
 }
 
 function getColladaTexture(domRoot, domImage, collada) {
-	if (!domRoot || !domImage || !collada) return null;
-
+        if (!domRoot || !domImage || !collada) return null;
+    
 	var domInitFrom = getXmlFirstTag(domImage, "init_from");
-	if (!domInitFrom) return null;
+        if (!domInitFrom) return null;	
 
 	var domTexFileName = domInitFrom.firstChild;
-	if (!domTexFileName) return null;
+        if (!domTexFileName)return null;    
 
 	var texture = domTexFileName.data;
-	if (!texture || (texture.length <= 0)) return null;
-
+        if (!texture || (texture.length <= 0))return null;
+	    
 	return texture;
 }
 
@@ -1099,7 +1100,9 @@ function getColladaAsset(domRoot, domAsset, collada) {
         if (!unitName) continue;
         var unitScale = domElem.getAttribute("meter");
         if (!unitScale) continue;
-        collada.unitScale = unitScale;
+        collada.unitScale = collada.scaleFactor*unitScale;
+	//collada.unitScale = unitScale;
+	//collada.unitScale = 1.0;
       break;
 
       default :
@@ -1124,17 +1127,20 @@ function getColladaAssets(domRoot, collada) {
   }
 }
 
-function getCollada(domRoot) {
-	if (!domRoot) return null;
+function getCollada(domRoot,scaleFactor) {
+    if (!domRoot) return null;
 
-	var collada = new ColladaDocument();
-	
-	getColladaAssets                (domRoot, collada);
-	getColladaScenes                (domRoot, collada);
-	getColladaInstanceVisualScenes  (domRoot, collada);
-	getColladaGeometries            (domRoot, collada);
-	getColladaMaterials             (domRoot, collada);
-	getColladaTextures              (domRoot, collada);
+    var collada = new ColladaDocument();
+    //console.log("collada.getCollada - My scaleFactor is: "+scaleFactor);
+    // If the user passed in a scaleFactor, then assign it.
+    if(scaleFactor != undefined || scaleFactor != null) collada.scaleFactor = scaleFactor;
+    
+    getColladaAssets                (domRoot, collada);
+    getColladaScenes                (domRoot, collada);
+    getColladaInstanceVisualScenes  (domRoot, collada);
+    getColladaGeometries            (domRoot, collada);
+    getColladaMaterials             (domRoot, collada);
+    getColladaTextures              (domRoot, collada);
 
-	return collada;
+    return collada;
 }

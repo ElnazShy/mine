@@ -84,7 +84,7 @@ ros.visualization.GLDocument = Class.extend({
 });
   
 ros.visualization.ColladaModel = ros.visualization.Model.extend({
-  init: function(gl, shader_manager, scene) 
+    init: function(gl, shader_manager, scene, scaleFactor) 
   {
     this._super(gl, shader_manager);
     this.shader = shader_manager.ShaderTypes.TEXTURE;
@@ -98,6 +98,13 @@ ros.visualization.ColladaModel = ros.visualization.Model.extend({
     this.indices = new Array();
 
     this.is_loaded = false;
+      
+    this.scaleFactor = 1.0;
+      if(scaleFactor != undefined || scaleFactor != null){
+	  this.scaleFactor = scaleFactor;
+      }
+
+    //console.log("ColladaModel.init - My scaleFactor is: "+this.scaleFactor);
   },
     
   load: function (callback) 
@@ -106,12 +113,15 @@ ros.visualization.ColladaModel = ros.visualization.Model.extend({
     var daePath = this.scene.url.substr(0, this.scene.url.lastIndexOf("/"));
     this.eye = this.scene.eye;
     this.alphaValue = this.scene.alpha;
-    
+      
     //    ros_debug("loading " + daePath);
-    
-    function onloadDataset(domCollada) {
+    //  console.log("ColladaModel.load - My scaleFactor is: "+this.scaleFactor);
+      function onloadDataset(domCollada) {
 	//console.log(domCollada);
-	var collada = getCollada(domCollada);
+
+	  //console.log("ColladaModel.load.onloadDataset - My scaleFactor is: "+that.scaleFactor);
+
+	  var collada = getCollada(domCollada,that.scaleFactor);
       if(!collada) {
         ros_error("collada document is invalid!!!");
         return;

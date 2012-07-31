@@ -29,97 +29,110 @@
  ******************************************************************************/
 
 ros.visualization.MarkerManager = Class.extend({
-  init: function(vm) {
-    this.vm = vm;
-    this.markerNodes = new ros.Map();
-  },
+    init: function(vm) {
+	this.vm = vm;
+	this.markerNodes = new ros.Map();
+    },
+    
+    subscribeMarker: function(marker_topic,callback) {
+	// subscribe to marker topic
+	var that = this;
+	if(callback == 'null' || callback == 'undefined'){
+	    this.vm.node.subscribe(marker_topic, function(msg){that.receiveMarkerMessage(msg);});
+	}
+	else{
+	    this.vm.node.subscribe(marker_topic, callback);
+	}
 	
-  subscribeMarker: function(marker_topic) {
-    // subscribe to marker topic
-    var that = this;
-    this.vm.node.subscribe(marker_topic, function(msg){that.receiveMarkerMessage(msg);});
-  },
-  
-  subscribeVisualizationScene: function(scene_topic) {
-    // subscribe to scene topic
-    var that = this;
-    this.vm.node.subscribe(scene_topic, function(msg){that.receiveSceneMessage(msg);});
-  },
-  
-  receiveSceneMessage: function(scene_msg) {
-    // process scene
-    for ( var c in scene_msg.markers) {
-      var marker = scene_msg.markers[c];
-      this.receiveMarkerMessage(marker);
-    }
-  },
-  
-  receiveMarkerMessage: function(marker_msg) {
-	  var marker_id = this.getMarkerStringID(marker_msg);
-	  var marker_action = marker_msg.action;
-	  
-//	  ros_debug("Received marker with id " + marker_id + " of type " + marker_msg.type);
-	  
-    var node_id = this.markerNodes.find(marker_id);
-    if(node_id != null) {
-      // remove existing marker from scene viewer
-      this.vm.scene_viewer.removeNode(node_id);
-      // remove existing marker from map
-      this.markerNodes.remove(marker_id);
-    }
+    },
+    
+    subscribeVisualizationScene: function(scene_topic) {
+	// subscribe to scene topic
+	var that = this;
+	this.vm.node.subscribe(scene_topic, function(msg){that.receiveSceneMessage(msg);});
+    },
+    
+    receiveSceneMessage: function(scene_msg) {
+	// process scene
+	for ( var c in scene_msg.markers) {
+	    var marker = scene_msg.markers[c];
+	    this.receiveMarkerMessage(marker);
+	}
+    },
+    
+    receiveMarkerMessage: function(marker_msg) {
+	var marker_id = this.getMarkerStringID(marker_msg);
+	var marker_action = marker_msg.action;
+	
+	//	  ros_debug("Received marker with id " + marker_id + " of type " + marker_msg.type);
+	
+	var node_id = this.markerNodes.find(marker_id);
+	this.removeMarker(node_id,marker_id);
 
-    if (marker_action == ros.visualization.Markers.MarkerActions.DELETE) {
-      // do nothing and 
-      return true;
-    }
-    else if(marker_action == ros.visualization.Markers.MarkerActions.ADD || 
-            marker_action == ros.visualization.Markers.MarkerActions.MODIFY) {
-      //ros_debug("Added marker of type " + marker_msg.type);
-		  var marker_type = marker_msg.type;
-		  var marker = null;
+	if (marker_action == ros.visualization.Markers.MarkerActions.DELETE) {
+	    // do nothing and 
+	    return true;
+	}
+	else if(marker_action == ros.visualization.Markers.MarkerActions.ADD || 
+		marker_action == ros.visualization.Markers.MarkerActions.MODIFY) {
+	    //ros_debug("Added marker of type " + marker_msg.type);
+	    var marker_type = marker_msg.type;
+	    var marker = null;
 	    // add a new marker
-		  if (marker_type == ros.visualization.Markers.MarkerTypes.ARROW)
-		    marker = new ros.visualization.Markers.ArrowMarker(this.vm);	
-		  else if (marker_type == ros.visualization.Markers.MarkerTypes.CUBE)
-        marker = new ros.visualization.Markers.CubeMarker(this.vm);  
-		  else if (marker_type == ros.visualization.Markers.MarkerTypes.SPHERE)
-        marker = new ros.visualization.Markers.SphereMarker(this.vm); 
-		  else if (marker_type == ros.visualization.Markers.MarkerTypes.POINTS)
-		    marker = new ros.visualization.Markers.PointsMarker(this.vm); 
-		  else if (marker_type == ros.visualization.Markers.MarkerTypes.LINE_LIST)
-        marker = new ros.visualization.Markers.LineListMarker(this.vm); 
-		  else if (marker_type == ros.visualization.Markers.MarkerTypes.LINE_STRIP)
-        marker = new ros.visualization.Markers.LineStripMarker(this.vm); 
-      else if (marker_type == ros.visualization.Markers.MarkerTypes.TRIANGLE_LIST)
-        marker = new ros.visualization.Markers.TriangleListMarker(this.vm);
-      else if (marker_type == ros.visualization.Markers.MarkerTypes.TEXT_VIEW_FACING)
-        marker = new ros.visualization.Markers.ViewfacingTextMarker(this.vm);
-      else if (marker_type == ros.visualization.Markers.MarkerTypes.MESH_RESOURCE)
-        marker = new ros.visualization.Markers.MeshMarker(this.vm);
-      else {
-		    ros_error("Marker type " + marker_type + " is currently not supported.");
-		    return false;
-		  }
-//      marker.setPickable(true);
-		  // update marker from message
-		  marker.updateFromMessage(marker_msg);
-      marker.setCumMatrix();
-		  node_id = this.vm.scene_viewer.addNode(marker);
-		  this.markerNodes.insert(marker_id, node_id);
+	    if (marker_type == ros.visualization.Markers.MarkerTypes.ARROW)
+		marker = new ros.visualization.Markers.ArrowMarker(this.vm);	
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.CUBE)
+		marker = new ros.visualization.Markers.CubeMarker(this.vm);  
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.SPHERE)
+		marker = new ros.visualization.Markers.SphereMarker(this.vm); 
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.POINTS)
+		marker = new ros.visualization.Markers.PointsMarker(this.vm); 
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.LINE_LIST)
+		marker = new ros.visualization.Markers.LineListMarker(this.vm); 
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.LINE_STRIP)
+		marker = new ros.visualization.Markers.LineStripMarker(this.vm); 
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.TRIANGLE_LIST)
+		marker = new ros.visualization.Markers.TriangleListMarker(this.vm);
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.TEXT_VIEW_FACING)
+		marker = new ros.visualization.Markers.ViewfacingTextMarker(this.vm);
+	    else if (marker_type == ros.visualization.Markers.MarkerTypes.MESH_RESOURCE)
+		marker = new ros.visualization.Markers.MeshMarker(this.vm);
+	    else {
+		ros_error("Marker type " + marker_type + " is currently not supported.");
+		return false;
+	    }
+	    //      marker.setPickable(true);
+	    // update marker from message
+	    marker.updateFromMessage(marker_msg);
+	    marker.setCumMatrix();
+	    node_id = this.vm.scene_viewer.addNode(marker);
+	    this.markerNodes.insert(marker_id, node_id);
 
-	  }
-	  
-	  else {
+	}
+	
+	else {
 	    ros_error("Marker action " + marker_action + " is currently not supported.");
 	    return false;
-	  }
+	}
+	
+	return true;
+    },
     
-    return true;
-  },
-  
-  getMarkerStringID: function(message) 
-  {
-    return message.ns + "/" + message.id;
-  },
-  
+    getMarkerStringID: function(message) 
+    {
+	return message.ns + "/" + message.id;
+    },
+
+    removeMarker: function(n_id, m_id){
+	// n_id: node_id
+	// m_id: marker_id
+	
+	if(n_id != null) {
+	    // remove existing marker from scene viewer
+	    this.vm.scene_viewer.removeNodeByName(n_id);
+	    // remove existing marker from map
+	    this.markerNodes.remove(m_id);
+	}
+    },
+    
 });
