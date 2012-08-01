@@ -10,7 +10,7 @@ dojo.declare("museum.PoseSequence", [dijit._Widget, dijit.layout.ContentPane], {
 	poses: null,
 	
 	postCreate: function() {
-		dojo.addClass(this.domNode, "pose-sequence");
+//		dojo.addClass(this.domNode, "pose-sequence");
 		this.domNode.innerHTML = "&nbsp;"; // kinda a hack...
 		
 		this.poses = [];

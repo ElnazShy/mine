@@ -392,7 +392,7 @@ ros.visualization.SceneViewer = Class.extend({
     getFixedFrameTransform : function(fixed_frame)
     {
 	if(!this.tf.tree) {
-    console.log("no tf tree");
+    //console.log("no tf tree");
 	    return;
   }
 

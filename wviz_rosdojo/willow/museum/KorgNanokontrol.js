@@ -9,6 +9,15 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 	last_msg: {},
 	
 	postCreate: function() {
+
+		this.button = {};
+		
+		this.button["play"] = this.addButton("Play");
+		this.button["Prev"] = this.addButton("Prev");
+		this.button["Next"] = this.addButton("Next");
+		this.button["Rec"]  = this.addButton("Rec");
+		this.button["Save"] = this.addButton("Save");
+
 		this.headTiltSlider = this.addSlider();
 		this.panSlider = this.addSlider();
 		this.liftSlider = this.addSlider();
@@ -20,6 +29,13 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 		this.torsoSlider = this.addSlider();
 		
 		ros.subscribe("/korg_joy", dojo.hitch(this, "korgMessageReceived"), -1, "sensor_msgs/Joy");
+	},
+
+	addButton : function(name) {
+		var btn = new dijit.form({label:name});
+		this.connect(btn,"onClick","buttonClicked");
+		this.buttons.
+		return btn;
 	},
 	
 	addSlider: function(name) {

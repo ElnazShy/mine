@@ -57,13 +57,13 @@
         
         // Finally, run the application logic that ties together the widgets
         museum();
+				setTimeout(resize,1000);
    	}
    	function museum() {
    		// Get handles to the widgets
    		var sequence = dijit.byId("sequence-widget");
    		var visualization = dijit.byId("visualization-widget");
    		
-      /*
    		// Subscribe to the korg controller.  Whenever the record button is pressed,
    		// add a new pose to the pose sequence
         ros.subscribe("/korg_joy", function(korgState) {
@@ -73,7 +73,7 @@
         			sequence.addPose(korgState, imgPreview);
         		});
         	} 	        	
-        });  */    
+        });      
    	}
    	dojo.ready(initialize);
    </script>
@@ -87,9 +87,6 @@
 	<div dojoType="museum.PoseTabWrapper" id="sequence-widget"></div>
 	<div dojoType="bosch.Visualization" id="visualization-widget"></div>
 	<div class="clear"></div>
-  <div id="footers">
-    <div dojoType="museum.ControlPanel" id="controlpanel-widget"></div>
-	  <div dojoType="museum.KorgNanokontrol" id="nanokontrol-widget"></div>
-  </div>
+	<div dojoType="museum.KorgNanokontrol" id="nanokontrol-widget"></div>
 </body>
 </html>

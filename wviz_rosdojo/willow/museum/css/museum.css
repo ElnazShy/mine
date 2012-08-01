@@ -63,12 +63,19 @@
 	position: absolute;
 }
 
+.willowlogo {
+}
+
 .korg-slider .korg-slider-line {
 	position: absolute;
 	height: 130px;
 	left: 13px;
 	top: 9px;
 	border: 1px solid #CCCCCC;
+}
+
+.kor-nanokontrol {
+	width:100%;
 }
 
 .korg-nanokontrol .korg-slider {
@@ -78,17 +85,18 @@
 .korg-nanokontrol .leftside,
 .korg-nanokontrol .rightside {
 	display: inline-block;
-	float: right
+	float: left;
 }
 
 .korg-nanokontrol .leftside {
-	width: 25%;
+	width: 44%;
 }
 
 .korg-nanokontrol .rightside {
-	width: 75%
+	width: 55%;
 }
 
 .korg-nanokontrol {
 	border-radius: 20px;
+	background-color: #CFEFFF;
 }

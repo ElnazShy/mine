@@ -12,12 +12,11 @@ dojo.declare("museum.PoseTabWrapper", [dijit._Widget,dijit.layout.TabContainer],
   postCreate : function() {
 		dojo.addClass(this.domNode, "pose-sequence");
 
-    var cp2 = new dijit.layout.ContentPane({title : "X",content:"Yello"});
-
     this.ps = new museum.PoseSequence({title:"V"});
+		dojo.style(this.ps.domNode,"height","100%");
+		dojo.style(this.ps.domNode,"width","90%");
    
     this.addChild(this.ps);
-    this.addChild(cp2);
     this.startup();
   },
 
