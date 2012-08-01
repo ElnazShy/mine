@@ -1,7 +1,7 @@
 {
   "interfaces":
     [
-      {"name":"ImageSeg",       "tutorialurl":"http://youtu.be/BW9hK-eP5GQ","launcher":"image_seg",       "surveyurl":"blank"},
-      {"name":"AssistiveTeleop","tutorialurl":"http://youtu.be/7eCgll-4hjk","launcher":"assistive_teleop","surveyurl":"blank"},
+      {"name":"ImageSeg",       "tutorialurl":"http://www.youtube.com/embed/BW9hK-eP5GQ","launcher":"image_seg",       "surveyurl":"blank"},
+      {"name":"AssistiveTeleop","tutorialurl":"http://www.youtube.com/embed/573v2guH8N4","launcher":"assistive_teleop","surveyurl":"blank"},
     ]
 }

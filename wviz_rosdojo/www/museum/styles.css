@@ -58,3 +58,13 @@ body {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+.footers {
+  background-color: #CFEFFF;
+}
+
+.controlpanel-widget {
+}
+
+.nanokontrol-widget {
+  width: 60%;
+}

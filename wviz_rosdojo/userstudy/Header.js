@@ -90,7 +90,6 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     this.dialogHTML.removeChild(this.lastdiv);
 
     var div = document.createElement('div'); 
-    this.dialogHTML.appendChild(div);
     
     var p = document.createElement('p');
     p.innerHTML = selected.name + " is selected";
@@ -98,6 +97,7 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     //this.launchInterface(event.target.innerText);
     this.createTutorial(div,selected);
     this.createReadyButton(div,selected);
+    this.dialogHTML.appendChild(div);
     this.lastdiv = div;
 
     this.prepareInterface(selected);
@@ -109,8 +109,11 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     iframe.setAttribute('src',selected.tutorialurl);
     iframe.setAttribute('width',420);
     iframe.setAttribute('height',315);
+    //console.log(iframe);
 
-    //div.appendChild(iframe);
+    div.appendChild(iframe);
+    var br = document.createElement('br');
+    div.appendChild(br);
   },
 
   createReadyButton : function(div,selected)
