@@ -63,7 +63,7 @@
    		// Get handles to the widgets
    		var sequence = dijit.byId("sequence-widget");
    		var visualization = dijit.byId("visualization-widget");
-   		
+
    		// Subscribe to the korg controller.  Whenever the record button is pressed,
    		// add a new pose to the pose sequence
         ros.subscribe("/korg_joy", function(korgState) {

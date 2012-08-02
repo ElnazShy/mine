@@ -24,11 +24,12 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   
   createLeftSide : function() {
 		this.button = {};
+		this.button["Backward"] = this.addButton("Backward",this.prev);
 		this.button["Play"] = this.addButton("Play",this.play);
-		this.button["Prev"] = this.addButton("Prev",this.prev);
-		this.button["Next"] = this.addButton("Next",this.next);
+		this.button["Forward"] = this.addButton("Forward",this.next);
 		this.button["Rec"]  = this.addButton("Rec",this.rec);
 		this.button["Save"] = this.addButton("Save",this.save);
+		this.button["Refresh"] = this.addButton("Refresh",this.refresh);
 
     this.createTimeSpinner();
    },
@@ -67,8 +68,8 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 	},
 
 	addButton : function(name) {
-    var iconname = 'mybutton ' + name
-		var btn = new dijit.form.Button({title:name, iconClass:iconname });
+    var iconname = name+'icon';
+		var btn = new dijit.form.Button({title:name, iconClass:iconname});
 		this.connect(btn,"onClick",name);
 		this.buttonsAttach.appendChild(btn.domNode);
 		return btn;
@@ -119,15 +120,15 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
     console.log("Play");
   },
 
-  Prev : function()
+  Backward : function()
   {
-    console.log("Prev Pressed");
+    console.log("Backward Pressed");
    // this.poseTabs.Prev();
   },                    	
 
-  Next : function()
+  Forward : function()
   {
-    console.log("Next");
+    console.log("Forward");
     //this.poseTabs.Next();
   },
 
@@ -140,5 +141,8 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   {
     console.log("Save Pressed");
   },
+
+Refresh : function() {
+          },
 
 });

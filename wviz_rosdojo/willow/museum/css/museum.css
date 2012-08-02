@@ -106,11 +106,53 @@
 	background-color: #CFEFFF;
 }
 
-.mybutton {
-  background-position: center center;
+.Saveicon {
+	background-image: url("../img/icons/Save.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  width:45px;
+  height:35px;
 }
 
-.mybutton .Save {
-  background-image: url(../images/Save.png)
-  background-position: center center;
+.Playicon {
+	background-image: url("../img/icons/Play.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  width:45px;
+  height:35px;
 }
+
+.Backwardicon {
+	background-image: url("../img/icons/Backward.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  width:45px;
+  height:35px;
+}
+
+.Forwardicon {
+	background-image: url("../img/icons/Forward.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  width:45px;
+  height:35px;
+}
+
+.Recicon {
+	background-image: url("../img/icons/Rec.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  text-align:center;
+  width:35px;
+  height:35px;
+}
+
+.Refreshicon {
+	background-image: url("../img/icons/Refresh.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  text-align:center;
+  width:35px;
+  height:35px;
+}
+
