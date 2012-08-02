@@ -5,6 +5,7 @@ dojo.require("dijit._Widget");
 dojo.declare("museum.KorgSlider", dijit._Widget, {
 	
 	// Parameters
+  label: "",
 	value: 0,
 	
 	// Internal variables
@@ -24,6 +25,13 @@ dojo.declare("museum.KorgSlider", dijit._Widget, {
 		this.knob = document.createElement('div');
 		dojo.addClass(this.knob, "korg-slider-knob");
 		this.domNode.appendChild(this.knob);
+
+    // Create the label
+    this.labelP = document.createElement('p');
+    dojo.addClass(this.labelP, "korg-slider-label");
+    console.log(this.label);
+    this.labelP.innerHTML = this.label;
+    //this.domNode.appendChild(this.labelP);
 		
 		// Connect the mouse events to move the knob
 		this.connect(this.knob, "onmousedown", "_mouseDown");

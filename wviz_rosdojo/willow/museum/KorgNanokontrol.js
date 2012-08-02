@@ -5,41 +5,49 @@ dojo.require("museum.KorgSlider");
 dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 	
 	// Internal variables
+  sliderList : ["TILT","PAN","LIFT","UPPER","ELBOW","FOREARM","WRIST","GRIP","TORSO"],
 	templateString: dojo.cache("museum", "templates/KorgNanokontrol"),
 	last_msg: {},
 	
 	postCreate: function() {
+    this.createLeftSide();
+    this.createRightSide();
 
-		this.button = {};
-		
-		this.button["play"] = this.addButton("Play");
-		this.button["Prev"] = this.addButton("Prev");
-		this.button["Next"] = this.addButton("Next");
-		this.button["Rec"]  = this.addButton("Rec");
-		this.button["Save"] = this.addButton("Save");
-
-		this.headTiltSlider = this.addSlider();
-		this.panSlider = this.addSlider();
-		this.liftSlider = this.addSlider();
-		this.upperSlider = this.addSlider();
-		this.elbowSlider = this.addSlider();
-		this.forearmSlider = this.addSlider();
-		this.wristSlider = this.addSlider();
-		this.gripSlider = this.addSlider();
-		this.torsoSlider = this.addSlider();
-		
 		ros.subscribe("/korg_joy", dojo.hitch(this, "korgMessageReceived"), -1, "sensor_msgs/Joy");
+  },
+  
+  createLeftSide : function() {
+		this.button = {};
+		this.button["Play"] = this.addButton("Play",this.play);
+		this.button["Prev"] = this.addButton("Prev",this.prev);
+		this.button["Next"] = this.addButton("Next",this.next);
+		this.button["Rec"]  = this.addButton("Rec",this.rec);
+		this.button["Save"] = this.addButton("Save",this.save);
+  },
+
+
+  createRightSide : function() {
+    this.createSliders();
+  },
+
+  createSliders : function() {
+    this.slider = {};
+
+    for(i in this.sliderList) {
+      var name = this.sliderList[i];
+      this.slider[name] = this.addSlider(name);
+    }
 	},
 
 	addButton : function(name) {
-		var btn = new dijit.form({label:name});
-		this.connect(btn,"onClick","buttonClicked");
-		this.buttons.
+		var btn = new dijit.form.Button({label:name, title:name});
+		this.connect(btn,"onClick",name);
+		this.buttonsAttach.appendChild(btn.domNode);
 		return btn;
 	},
-	
+
 	addSlider: function(name) {
-		var slider = new museum.KorgSlider();
+		var slider = new museum.KorgSlider({label:name});
 		this.connect(slider, "onSliderMoved", "virtualKorgChanged");
 		this.slidersAttach.appendChild(slider.domNode);
 		return slider;
@@ -47,15 +55,11 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 	
 	korgMessageReceived: function(msg) {
 		this.last_msg = msg;
-		this.headTiltSlider.setValue(msg.axes[0]);
-		this.panSlider.setValue(msg.axes[1]);
-		this.liftSlider.setValue(msg.axes[2]);
-		this.upperSlider.setValue(msg.axes[3]);
-		this.elbowSlider.setValue(msg.axes[4]);
-		this.forearmSlider.setValue(msg.axes[5]);
-		this.wristSlider.setValue(msg.axes[6]);
-		this.gripSlider.setValue(msg.axes[7]);
-		this.torsoSlider.setValue(msg.axes[8]);
+
+    for(i in this.sliderList) {
+      var name = this.sliderList[i];
+      this.slider[name].setValue(msg.axes[i]);
+    }
 	},
 	
 	virtualKorgChanged: function() {
@@ -70,18 +74,41 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 		} else {
 			msg.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		}
-		msg.axes[0] = this.headTiltSlider.value;
-		msg.axes[1] = this.panSlider.value;
-		msg.axes[2] = this.liftSlider.value;
-		msg.axes[3] = this.upperSlider.value;
-		msg.axes[4] = this.elbowSlider.value;
-		msg.axes[5] = this.forearmSlider.value;
-		msg.axes[6] = this.wristSlider.value;
-		msg.axes[7] = this.gripSlider.value;
-		msg.axes[8] = this.torsoSlider.value;
-		console.log('publishing...')
-		ros.publish("/korg_joy", "sensor_msgs/Joy", dojo.toJson(msg));
-	}
-	
+
+    for(var i in this.sliderList) {
+      var name = this.sliderList[i];
+      msg.axes[i] = this.slider[name].value;
+    }
+
+    if(ros.publish) {
+		  console.log('publishing...')
+		  ros.publish("/korg_joy", "sensor_msgs/Joy", dojo.toJson(msg));
+    }
+	},
+
+  Play : function()
+  {
+    console.log("Play");
+  },
+
+  Prev : function()
+  {
+    console.log("Prev");
+  },                    	
+
+  Next : function()
+  {
+    console.log("Next");
+  },
+
+  Rec : function()
+  {
+    console.log("Rec");
+  },
+
+  Save : function()
+  {
+    console.log("Save");
+  },
 
 });
