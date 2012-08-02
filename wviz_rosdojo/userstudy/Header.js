@@ -48,14 +48,12 @@ dojo.declare("userstudy.Header",dijit._Widget, {
   openDialog : function(event) {
     console.log("Open");
     var content = this.createDialog();
-    console.log(content);
     this.dialog.attr('content',content);
     this.dialog.show();
   },
 
   createDialog : function() {
     var html = document.createElement('div');
-    //console.log(this.interfaceList);
     for(i in this.interfaces.interfaces)
     {
       var btn = this.createButton(this.interfaces.interfaces[i].name);
@@ -111,7 +109,7 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     iframe.setAttribute('height',315);
     //console.log(iframe);
 
-    div.appendChild(iframe);
+//    div.appendChild(iframe);
     var br = document.createElement('br');
     div.appendChild(br);
   },
@@ -130,8 +128,13 @@ dojo.declare("userstudy.Header",dijit._Widget, {
 
   prepareInterface : function(selected) {
     var board = dojo.byId(this.boardID);
+    console.log(selected.interface);
     console.log(board);
-    board.innerHTML = selected.name;
+    dojo.require(selected.interface);
+    var page = dojo.getObject(selected.interface,true);
+    var pageObject = new page();
+    console.log(pageObject);
+    board.appendChild(pageObject.domNode);
   },
 
   launchInterface : function(name)
