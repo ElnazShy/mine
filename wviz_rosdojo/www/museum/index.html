@@ -63,6 +63,9 @@
    		// Get handles to the widgets
    		var sequence = dijit.byId("sequence-widget");
    		var visualization = dijit.byId("visualization-widget");
+			var kontrol = dijit.byId("nanokontrol-widget");
+			kontrol.setVisualization(visualization);
+			kontrol.setSequence(sequence);
 
    		// Subscribe to the korg controller.  Whenever the record button is pressed,
    		// add a new pose to the pose sequence

@@ -2,6 +2,8 @@ dojo.provide("museum.PoseSequenceEntry");
 
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
+dojo.require("dijit.form.DropDownButton");
+dojo.require("dijit.TooltipDialog");
 
 dojo.require("museum.Utils");
 dojo.require("museum.common.RobotPose");
@@ -30,6 +32,7 @@ dojo.declare("museum.PoseSequenceEntry", [dijit._Widget, dijit._Templated], {
 	templateString: dojo.cache("museum", "templates/PoseSequenceEntry.html"),
 	
 	postCreate: function() {		
+		dojo.addClass(this.domNode, "pose-sequence-entry");
 		if (this.imgPreview) {
 			this.setImage(this.imgPreview);
 		}
@@ -40,8 +43,15 @@ dojo.declare("museum.PoseSequenceEntry", [dijit._Widget, dijit._Templated], {
 			this.pose = new museum.common.RobotPose();
 		}
 		this.setPose(this.pose);
+//		this.setMenu();
 		
 		this.setPoseNumber(this.number);
+
+		dojo.connect(this.domNode,"onmouseenter",this,"onmouseenter");
+		dojo.connect(this.domNode,"onmouseleave",this,"onmouseleave");
+		dojo.connect(this.domNode,"onmousedown",this,"onmousedown");
+		dojo.connect(this.domNode,"onmouseup",this,"onmouseup");
+
 	},
 	
 	// Do some nice image scaling so that the image preview looks half decent :)
@@ -89,10 +99,28 @@ dojo.declare("museum.PoseSequenceEntry", [dijit._Widget, dijit._Templated], {
 		this.poseDetailsAttach.innerHTML = "";
 		this.poseDetailsAttach.appendChild(pose.toDomNode());
 	},
-	
+
 	setPoseNumber: function(number) {
 		this.poseNumberAttach.innerHTML = "";
 		this.poseNumberAttach.appendChild(document.createTextNode(number))
-	}
+	},
+
+	onmouseenter : function(event) {
+//		dojo.style(this.domNode,"background-color","#CFFFFF");
 	
+	},
+
+	onmouseleave : function(event) {
+//		dojo.style(this.domNode,"background-color","#CFEFFF");
+	},
+
+	onmousedown : function(event) {
+//		dojo.style(this.domNode,"background-color","#FFFFFF");
+	},
+
+	onmouseup : function(event) {
+//		dojo.style(this.domNode,"background-color","#CFEFFF");
+	},
+
+
 });

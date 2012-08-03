@@ -28,8 +28,9 @@ dojo.declare("museum.PoseSequence", [dijit._Widget, dijit.layout.ContentPane], {
 	},
 	
 	setHeight: function(height) {
-		console.log("Setting posesquence widget height to ", height);
-		dojo.style(this.domNode, "height", height+"px");
+		dojo.style(this.domNode,"height","90%");
+		dojo.style(this.domNode,"width","90%");
+
 	}
 	
 });

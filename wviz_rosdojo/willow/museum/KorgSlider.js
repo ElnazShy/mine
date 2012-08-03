@@ -29,7 +29,6 @@ dojo.declare("museum.KorgSlider", dijit._Widget, {
     // Create the label
     this.labelP = document.createElement('p');
     dojo.addClass(this.labelP, "korg-slider-label");
-    console.log(this.label);
     this.labelP.innerHTML = this.label;
     //this.domNode.appendChild(this.labelP);
 		

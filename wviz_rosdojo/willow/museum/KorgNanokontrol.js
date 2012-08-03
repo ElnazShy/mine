@@ -14,6 +14,8 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   sliderList : ["TILT","PAN","LIFT","UPPER","ELBOW","FOREARM","WRIST","GRIP","TORSO"],
 	templateString: dojo.cache("museum", "templates/KorgNanokontrol"),
 	last_msg: {},
+	visualization : null,
+	sequence : null,
 	
 	postCreate: function() {
     this.createLeftSide();
@@ -21,6 +23,14 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 
 		ros.subscribe("/korg_joy", dojo.hitch(this, "korgMessageReceived"), -1, "sensor_msgs/Joy");
   },
+
+	setVisualization : function(vis) {
+		this.visualization = vis;
+	},
+
+	setSequence : function(seq) {
+		this.sequence = seq;
+	},
   
   createLeftSide : function() {
 		this.button = {};
@@ -69,7 +79,7 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 
 	addButton : function(name) {
     var iconname = name+'icon';
-		var btn = new dijit.form.Button({title:name, iconClass:iconname});
+		var btn = new dijit.form.Button({title:name, iconClass:iconname, showLabel:false});
 		this.connect(btn,"onClick",name);
 		this.buttonsAttach.appendChild(btn.domNode);
 		return btn;
@@ -135,6 +145,11 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   Rec : function()
   {
     console.log("Rec Pressed");
+		/*
+		this.visualization.generatePreview(function(imgPreview) {
+			console.log("Adding the pose to the pose sequence");
+	    that.sequence.addPose(korgState, imgPreview);
+		});*/
   },
 
   Save : function()
@@ -142,7 +157,8 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
     console.log("Save Pressed");
   },
 
-Refresh : function() {
-          },
+	Refresh : function() {
+  
+	},
 
 });

@@ -24,7 +24,7 @@
 }
 
 .robot-pose .info {
-	width: 70%;    
+	width: 70%; 
 	border-left: 1px solid #759DC0;
     margin-left: -1px;
 }
@@ -43,6 +43,20 @@
 
 .pose-sequence {
     overflow: auto;
+		width:40%;
+		height:100%;
+}
+
+.pose-sequence-entry {
+	background-color: #CFEFFF;
+}
+
+.pose-sequence-entry:hover {
+	background-color: #CFFFFF;
+}
+
+.pose-sequence-entry:active {
+	background-color: #EFFFFF;
 }
 
 .korg-slider {
@@ -156,3 +170,11 @@
   height:35px;
 }
 
+.Editicon {
+	background-image: url("../img/icons/Edit.png");
+	background-repeat: no-repeat;
+	background-position: center;
+  text-align:center;
+  width:35px;
+  height:35px;
+}

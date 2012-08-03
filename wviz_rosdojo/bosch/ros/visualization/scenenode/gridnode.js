@@ -21,8 +21,8 @@ ros.visualization.GridNode = ros.visualization.SceneNode.extend({
 	    
 	    this.current_frame = "/odom_combined";
 	    this.size = 10;
-	    this.resolution = 0.1;
-	    this.color = [Math.random(), Math.random(), Math.random()];
+	    this.resolution = 0.3;
+	    this.color = [0.314, 0.773, 1.0];
 	}
 	
 	this._super(vm);      

@@ -9,7 +9,7 @@ dojo.require("dijit._Widget");
 dojo.declare("bosch.Visualization", dijit._Widget, {
 	
 	// Optional parameters
-	tf_topic: "/tf",
+	tf_topic: "/tf_changes",
 	fixed_frame: "/odom_combined",
 	urdf: dojo.moduleUrl("bosch", "resources/pr2_description/pr2_urdf.xml"),
 	width: 640,
@@ -34,15 +34,15 @@ dojo.declare("bosch.Visualization", dijit._Widget, {
 		this.vm.scene_viewer.fixed_frame = this.fixed_frame;
 
     this.connect(ros, "onOpen", "addNodes");
-		this.vm.addGrid(this.fixed_frame, 10.0, 1.0);
   	this.connect(ros, "onOpen", "refreshRobot");
 	},
 
   addNodes : function() {
 
-		//this.robot_model = this.vm.addRobotModel(this.urdf);
-    this.vm.addInteractiveMarker("/basic_controls/update");
-		//this.periodicallyRefresh();
+		this.vm.addGrid(this.fixed_frame, 10.0, 1.0);
+		this.robot_model = this.vm.addRobotModel(this.urdf);
+    //this.vm.addInteractiveMarker("/basic_controls/update");
+		this.periodicallyRefresh();
              
   },
 	
@@ -68,14 +68,12 @@ dojo.declare("bosch.Visualization", dijit._Widget, {
 	},
 	
 	periodicallyRefresh: function() {
-    console.log("here");
 		this.refreshRobot();
 		window.setTimeout(dojo.hitch(this, "periodicallyRefresh"), 10000);
 	},
 	
 	refreshRobot: function() {
 		//if (ros.available()) {
-      console.log("Updating TF");
 			ros.callService("/wviz_tf_manager/publish_all_transforms", "[]", function() {});
 		//}
 	},

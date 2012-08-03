@@ -7,22 +7,31 @@ dojo.declare("museum.common.RobotPose", null, {
 		this.torso = {};
 		this.left = {};
 		this.right = {};
+
+		this.headName = {};
+		this.torsoName = {};
+		this.leftName = {};
+		this.rightName = {};
 	},
 	
 	setHead: function(pan, tilt) {
 		this.head = [ pan, tilt ];
+		this.headName = ["pan","tilt"];
 	},
 	
 	setTorso: function(lift) {
 		this.torso = [ lift ];
+		this.torsoName = ["lift"];
 	},
 	
 	setLeft: function(pan, lift, upper_arm_roll, elbow_flex, forearm_roll, wrist_flex, wrist_roll, gripper) {
 		this.left = [ pan, lift, upper_arm_roll, elbow_flex, forearm_roll, wrist_flex, wrist_roll, gripper ];
+		this.leftName = ["pan", "lift", "upper_arm_roll", "elbow_flex", "forearm_roll", "wrist_flex", "wrist_roll", "gripper"];
 	},
 	
 	setRight: function(pan, lift, upper_arm_roll, elbow_flex, forearm_roll, wrist_flex, wrist_roll, gripper) {
 		this.right = [ pan, lift, upper_arm_roll, elbow_flex, forearm_roll, wrist_flex, wrist_roll, gripper ];
+		this.rightName = ["pan", "lift", "upper_arm_roll", "elbow_flex", "forearm_roll", "wrist_flex", "wrist_roll", "gripper"];
 	},
 	
 	toDomNode: function() {
