@@ -43,14 +43,14 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 		this.button["Rec"]  = this.addButton("Rec",this.rec);
 		this.button["Save"] = this.addButton("Save",this.save);
 		this.button["Refresh"] = this.addButton("Refresh",this.refresh);
-    this.createTimeSpinner();
-    this.createModeChanger();
+
+
    },
 
   createTimeSpinner : function() {
     var p = document.createElement('p');
     p.innerText = "Time : ";
-    this.buttonsAttach.appendChild(p);
+    this.slidersAttach.appendChild(p);
     this.timeSpinner = new dijit.form.NumberSpinner({
                                           value:5.0,
                                           smallDelta:0.1,
@@ -79,7 +79,7 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
     menu.addChild(menuitem2);
 
     this.modeButton.attr('dropDown',menu);
-    this.buttonsAttach.appendChild(this.modeButton.domNode);
+    this.slidersAttach.appendChild(this.modeButton.domNode);
   },
 
   setMode : function(mode) {
@@ -88,6 +88,9 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 
   createRightSide : function() {
     //this.createSliders();
+    this.createTimeSpinner();
+    this.createModeChanger();
+
   },
 
   setPoseTabs : function(tabs) {
