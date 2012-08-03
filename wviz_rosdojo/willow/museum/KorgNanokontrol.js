@@ -3,7 +3,10 @@ dojo.provide("museum.KorgNanokontrol");
 dojo.require("museum.KorgSlider");
 
 dojo.require("dijit.form.Button");
+dojo.require("dijit.form.ComboButton");
 dojo.require("dijit.form.NumberSpinner");
+dojo.require("dijit.Menu");
+dojo.require("dijit.MenuItem");
 
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
@@ -34,14 +37,14 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   
   createLeftSide : function() {
 		this.button = {};
-		this.button["Backward"] = this.addButton("Backward",this.prev);
-		this.button["Play"] = this.addButton("Play",this.play);
-		this.button["Forward"] = this.addButton("Forward",this.next);
+		//this.button["Backward"] = this.addButton("Backward",this.prev);
+		//this.button["Play"] = this.addButton("Play",this.play);
+		//this.button["Forward"] = this.addButton("Forward",this.next);
 		this.button["Rec"]  = this.addButton("Rec",this.rec);
 		this.button["Save"] = this.addButton("Save",this.save);
 		this.button["Refresh"] = this.addButton("Refresh",this.refresh);
-
     this.createTimeSpinner();
+    this.createModeChanger();
    },
 
   createTimeSpinner : function() {
@@ -59,9 +62,32 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
     p.appendChild(this.timeSpinner.domNode);
   },
 
+  createModeChanger : function() {
+    var that = this;
+    this.modeButton = new dijit.form.ComboButton({label:'Slider Mode'});
+    var menu = new dijit.Menu({style:"display:none;"});
+    var menuitem1 = new dijit.MenuItem({
+      label:"Slider Mode",
+      onClick:function() { that.modeButton.attr('label','Slider Mode'); that.setMode('Slider')}
+      }); 
+    menu.addChild(menuitem1);
+
+    var menuitem2 = new dijit.MenuItem({
+      label:"Manniquin Mode",
+      onClick:function() { that.modeButton.attr('label','Manniquin Mode'); that.setMode('Manniquin')}
+      }); 
+    menu.addChild(menuitem2);
+
+    this.modeButton.attr('dropDown',menu);
+    this.buttonsAttach.appendChild(this.modeButton.domNode);
+  },
+
+  setMode : function(mode) {
+    console.log(mode);
+  },
 
   createRightSide : function() {
-    this.createSliders();
+    //this.createSliders();
   },
 
   setPoseTabs : function(tabs) {
@@ -158,6 +184,7 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   },
 
 	Refresh : function() {
+    console.log("Refresh Pressed");
   
 	},
 

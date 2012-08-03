@@ -41,6 +41,13 @@
 	color: #254D70;
 }
 
+.robot-pose .poseremove {
+  background-image:url("../img/icons/Remove.png");
+  position: absolute;
+  text-align: right;
+  right:5px;
+}
+
 .pose-sequence {
     overflow: auto;
 		width:40%;
@@ -178,3 +185,4 @@
   width:35px;
   height:35px;
 }
+

@@ -12,13 +12,21 @@ dojo.declare("museum.PoseTabWrapper", [dijit._Widget,dijit.layout.TabContainer],
   postCreate : function() {
 		dojo.addClass(this.domNode, "pose-sequence");
 
-    this.ps = new museum.PoseSequence({title:"V"});
-		dojo.style(this.ps.domNode,"margin","5%");
-		dojo.style(this.ps.domNode,"height","90%");
-		dojo.style(this.ps.domNode,"width","80%");
-   
-    this.addChild(this.ps);
+    this.addChild(this.createPoseSequence("&#9679"));
+    this.addChild(this.createPoseSequence("&#9632"));
+    this.addChild(this.createPoseSequence("&times"));
+    this.addChild(this.createPoseSequence("&#9650"));
     this.startup();
+  },
+
+  createPoseSequence : function(label) {
+    var tab = new museum.PoseSequence({title:label});
+
+		dojo.style(tab.domNode,"margin","5%");
+		dojo.style(tab.domNode,"height","90%");
+		dojo.style(tab.domNode,"width","80%");
+
+    return tab;
   },
 
 	setHeight: function(height) {

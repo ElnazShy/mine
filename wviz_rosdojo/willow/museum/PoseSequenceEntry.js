@@ -43,7 +43,7 @@ dojo.declare("museum.PoseSequenceEntry", [dijit._Widget, dijit._Templated], {
 			this.pose = new museum.common.RobotPose();
 		}
 		this.setPose(this.pose);
-//		this.setMenu();
+    this.setRemoveButton();
 		
 		this.setPoseNumber(this.number);
 
@@ -104,6 +104,9 @@ dojo.declare("museum.PoseSequenceEntry", [dijit._Widget, dijit._Templated], {
 		this.poseNumberAttach.innerHTML = "";
 		this.poseNumberAttach.appendChild(document.createTextNode(number))
 	},
+
+  setRemoveButton : function() { 
+  },
 
 	onmouseenter : function(event) {
 //		dojo.style(this.domNode,"background-color","#CFFFFF");
