@@ -6,7 +6,7 @@ float end_mousePosY;
 PImage img;
 
 void setup() {
-  size(400,400);
+  size(100,100);
   PFont fontA = loadFont("courier");
   textFont(fontA, 100);
 
@@ -17,7 +17,7 @@ void setup() {
 
   flag = false;
 
-  img = createImage(640,480);
+  img = createImage(320,240);
 
   start_mousePosX=start_mousePosY = end_mousePosX =end_mousePosY =0;
 

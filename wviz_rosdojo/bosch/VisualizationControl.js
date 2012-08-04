@@ -109,7 +109,7 @@ dojo.declare("bosch.VisualizationControl",[dijit._Widget, dijit._Templated],{
       this.addButton = new dijit.form.Button({label:"Add",disabled:true},this.addAttach);
       this.connect(this.addButton,"onClick","addNode");
   
-      this.globalOptionButton = new dijit.form.DropDownButton({label:"Global Option",disabled:true,
+      this.globalOptionButton = new dijit.form.DropDownButton({label:"Global Option",disabled:false,
                                                                   dropDownPosition:["above","after"]},this.globalOptionAttach);
     },
 

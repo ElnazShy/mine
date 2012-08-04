@@ -1,6 +1,6 @@
 dojo.provide("museum.KorgNanokontrol");
 
-dojo.require("museum.KorgSlider");
+dojo.require("museum.KorgSlidersControl");
 
 dojo.require("dijit.form.Button");
 dojo.require("dijit.form.ComboButton");
@@ -12,11 +12,8 @@ dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 
 dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
-	
-	// Internal variables
-  sliderList : ["TILT","PAN","LIFT","UPPER","ELBOW","FOREARM","WRIST","GRIP","TORSO"],
+  
 	templateString: dojo.cache("museum", "templates/KorgNanokontrol"),
-	last_msg: {},
 	visualization : null,
 	sequence : null,
 	
@@ -37,34 +34,33 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   
   createLeftSide : function() {
 		this.button = {};
-		//this.button["Backward"] = this.addButton("Backward",this.prev);
-		//this.button["Play"] = this.addButton("Play",this.play);
-		//this.button["Forward"] = this.addButton("Forward",this.next);
-		this.button["Rec"]  = this.addButton("Rec",this.rec);
-		this.button["Save"] = this.addButton("Save",this.save);
-		this.button["Refresh"] = this.addButton("Refresh",this.refresh);
+		this.button["Rec"]  = this.addButton("Rec");
+		this.button["Save"] = this.addButton("Save");
+		this.button["Refresh"] = this.addButton("Refresh");
 
-
+    this.createTimeSpinner(this.buttonsAttach);
+    this.createModeChanger(this.buttonsAttach);
    },
 
-  createTimeSpinner : function() {
+  createTimeSpinner : function(attachPoint) {
     var p = document.createElement('p');
     p.innerText = "Time : ";
-    this.slidersAttach.appendChild(p);
     this.timeSpinner = new dijit.form.NumberSpinner({
-                                          value:5.0,
-                                          smallDelta:0.1,
-                                          constraints: { min:0.1, max:10},
+                                          value:3.0,
+                                          smallDelta:0.2,
+                                          constraints: { min:0.1, max:6},
                                           style:"width:75px"
                                          }
                                          );
     
     p.appendChild(this.timeSpinner.domNode);
+    attachPoint.appendChild(p);
   },
 
-  createModeChanger : function() {
+  createModeChanger : function(attachPoint) {
     var that = this;
     this.modeButton = new dijit.form.ComboButton({label:'Slider Mode'});
+    dojo.style(this.modeButton.domNode,'width','200px');
     var menu = new dijit.Menu({style:"display:none;"});
     var menuitem1 = new dijit.MenuItem({
       label:"Slider Mode",
@@ -79,7 +75,7 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
     menu.addChild(menuitem2);
 
     this.modeButton.attr('dropDown',menu);
-    this.slidersAttach.appendChild(this.modeButton.domNode);
+    attachPoint.appendChild(this.modeButton.domNode);
   },
 
   setMode : function(mode) {
@@ -87,24 +83,19 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
   },
 
   createRightSide : function() {
-    //this.createSliders();
-    this.createTimeSpinner();
-    this.createModeChanger();
+    this.sliderControl = new museum.KorgSlidersControl({attachPoint:this.slidersAttach,korgChanged:this.onKorgChange});
+  },
 
+  onKorgChange : function(msg) {
+    if(ros.publish) {
+  	  console.log('publishing...')
+  	  ros.publish("/korg_joy", "sensor_msgs/Joy", dojo.toJson(msg));
+    }
   },
 
   setPoseTabs : function(tabs) {
     this.poseTabs = tabs;
   },
-
-  createSliders : function() {
-    this.slider = {};
-
-    for(i in this.sliderList) {
-      var name = this.sliderList[i];
-      this.slider[name] = this.addSlider(name);
-    }
-	},
 
 	addButton : function(name) {
     var iconname = name+'icon';
@@ -114,46 +105,10 @@ dojo.declare("museum.KorgNanokontrol", [dijit._Widget, dijit._Templated], {
 		return btn;
 	},
 
-	addSlider: function(name) {
-		var slider = new museum.KorgSlider({label:name});
-		this.connect(slider, "onSliderMoved", "virtualKorgChanged");
-		this.slidersAttach.appendChild(slider.domNode);
-		return slider;
-	},
-	
 	korgMessageReceived: function(msg) {
-		this.last_msg = msg;
-
-    for(i in this.sliderList) {
-      var name = this.sliderList[i];
-      this.slider[name].setValue(msg.axes[i]);
-    }
+    this.sliderControl.korgMessageReceived(msg);
 	},
 	
-	virtualKorgChanged: function() {
-		var msg = {};
-		if (this.last_msg.axes) {
-			msg.axes = this.last_msg.axes;
-		} else {
-			msg.axes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		}
-		if (this.last_msg.buttons) {
-			msg.buttons = this.last_msg.buttons;
-		} else {
-			msg.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-		}
-
-    for(var i in this.sliderList) {
-      var name = this.sliderList[i];
-      msg.axes[i] = this.slider[name].value;
-    }
-
-    if(ros.publish) {
-		  console.log('publishing...')
-		  ros.publish("/korg_joy", "sensor_msgs/Joy", dojo.toJson(msg));
-    }
-	},
-
   Play : function()
   {
     console.log("Play");

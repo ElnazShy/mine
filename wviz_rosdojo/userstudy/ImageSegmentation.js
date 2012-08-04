@@ -20,6 +20,7 @@ dojo.declare("userstudy.ImageSegmentation", [dijit._Widget, dijit._Templated], {
   flag : false,
 
   postCreate : function() {
+    dojo.addClass(this.domNode,"image-segmentation");
     this.utils = new userstudy.Utils();
     this.createLeft();
     this.createRight();
@@ -38,17 +39,22 @@ dojo.declare("userstudy.ImageSegmentation", [dijit._Widget, dijit._Templated], {
   createButtons : function() {
     this.button = {};
     this.button["Seg"] = this.createButton("Segmentation");
-    console.log("here");
     this.button["Pickup"] = this.createButton("Pickup");
-    console.log("here");
     this.button["Reset"] = this.createButton("Reset");
-    console.log("here");
   },
 
   createButton : function(name) {
-    var button = new dijit.form.Button({label:name},this.buttonsAttach);
+    var button = new dijit.form.Button({label:name, style:"width:150px"});
+    this.buttonsAttach.appendChild(button.domNode);
+    this.addNewLine(this.buttonsAttach);
     this.connect(button,"onClick",name);
     return button;
+  },
+
+  addNewLine : function(attachPoint)
+  {
+    var br = document.createElement('br');
+    attachPoint.appendChild(br);
   },
 
   Segmentation : function(event) {
@@ -67,6 +73,8 @@ dojo.declare("userstudy.ImageSegmentation", [dijit._Widget, dijit._Templated], {
     req.bottomright = { x:fi_x,y:fi_y,z:0};
 
     var that = this;
+    that.log('Hello');
+    console.log('Hello');
     ros.callService(this.segService,dojo.toJson([req]),function(msg) {
       that.pIns.resetImage(resp.img);
       that.flag = true;
@@ -98,30 +106,33 @@ dojo.declare("userstudy.ImageSegmentation", [dijit._Widget, dijit._Templated], {
     var that = this;
     ros.callService(this.resetService,dojo.Json([]),function(resp) {
         that.log('Received Image');
-        that.processingIns.resetImage(resp.img);
+        that.pIns.resetImage(resp.img);
         that.flag = false;
       });
     that.log('Reset Image');
   },
 
   createLog : function() {
-    this.log = document.createElement('div');
-    this.logAttach.appendChild(this.log);
+    var label =  document.createElement('label');
+    label.innerHTML = "- Log -";
+    this.logDiv = document.createElement('div');
+    this.logAttach.appendChild(label);
+    this.logAttach.appendChild(this.logDiv);
   },
 
   log : function(msg) {
-    this.log.appendChild(msg.toString() + '<br/>');
-    this.log.attr({scrollTop : this.log.attr('scrollHeight')});
+    this.logDiv.innerHTML += msg + '<br/>';
+    //this.logDiv.attr({scrollTop : this.logDiv.attr('scrollHeight')});
   },
 
   createCanvas : function() {
     this.canvas = document.createElement('canvas'); 
-    this.canvas.width = "50px"
-    this.canvas.height = "300px"
+    this.canvas.width = "50px";
+    this.canvas.height = "300px";
     this.canvas.setAttribute("style","border: 2px solid black");
 
     var source = userstudy.Utils.loadSource("lib/image_seg.pde");
-    this.processingIns = new Processing(this.canvas,source);
+    this.pIns = new Processing(this.canvas,source);
     this.canvasAttach.appendChild(this.canvas);
   },
     

@@ -19,18 +19,9 @@ body {
 	right: 0;
 }
 
-.connectionpanel {
-	text-align: right;
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
-
-.robot-visualization, .middlepanel{
-	display: inline-block;
-}
-
-.middlepanel {
-  height: 100%
+div#userstudy-board {
+  height: 500px;
+  width:100%;
 	margin-top: 10px;
 	border: 1px solid #759DC0;
 	border-top-right-radius: 7px;

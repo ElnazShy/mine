@@ -109,7 +109,7 @@ dojo.declare("userstudy.Header",dijit._Widget, {
     iframe.setAttribute('height',315);
     //console.log(iframe);
 
-//    div.appendChild(iframe);
+    div.appendChild(iframe);
     var br = document.createElement('br');
     div.appendChild(br);
   },
@@ -128,6 +128,7 @@ dojo.declare("userstudy.Header",dijit._Widget, {
 
   prepareInterface : function(selected) {
     var board = dojo.byId(this.boardID);
+    board.innerHtml = "";
     console.log(selected.interface);
     console.log(board);
     dojo.require(selected.interface);
