@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Hello World</title>
+<!-- load Dojo and the default dojo theme, claro -->
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="../dojo_common/dijit/themes/claro/claro.css"/>
+<script src="../dojo_common/dojo/dojo.js.uncompressed.js" data-dojo-config="async: true"></script>
+<script>
+        var ros;
+		require({
+                aliases: [
+                    [ "eventemitter2","rosjs/eventemitter2"],
+                    [ "actionclient", "actionlibjs/actionclient"],
+                    [ "map","map2djs/map"]
+                ]
+                ,
+                packages: [ 
+                    { name:"jquery", location:"/jquery_common"},
+                    { name:"rosjs", location:"/rosjs"},
+                    { name:"nav2djs", location:"/nav2djs"},
+                    { name:"map2djs", location:"/map2djs"},
+                    { name:"actionlibjs", location:"/actionlibjs"},
+                    { name:"mjpegcanvasjs", location:"/mjpegcanvasjs"},
+                    { name:"yujin_webtools", location: "/yujin_webtools"},
+                    { name:"roswidgets", location:"/robotwebtools_amd/roswidgets"},
+                ]},
+        [
+            "dojo/parser",
+            "dojo/ready",
+            "dojo/on",
+            "dojo/dom",
+            "dijit/registry",
+            "roswidgets/ConnectionPanel",
+            "rosjs/ros",
+            "mjpegcanvasjs/mjpegcanvas",
+            "yujin_webtools/widgets/NavigationCanvas",
+            "yujin_webtools/widgets/NavigationPopup",
+            "yujin_webtools/tools/virtualjoystick",
+		],
+        function(parser,ready,on,dom,registry,CPanel,ROS,MjpegCanvas,NavCanvas,NavPopup,VirtualJoystick)
+        {
+            var initialize = function() {
+                ros = new ROS('ws://192.168.10.77:9090');
+                parser.parse();
+                popup = registry.byId("nav_popup");
+                canvas =registry.byId("nav_canvas");
+
+                dojo.connect(popup,"initPoseClicked",canvas,"initPoseClicked");
+                dojo.connect(popup,"setGoalClicked",canvas,"setGoalClicked");
+                dojo.connect(popup,"cancelGoalClicked",canvas,"cancelGoalClicked");
+
+                var canvas = dom.byId('mjpegcanvas');
+                var cwidth = canvas.width;
+                var cheight = canvas.height;
+
+                var mjpeg = new MjpegCanvas({
+                    host : '192.168.10.77',
+                    topic : ['/r_forearm_cam/image_color', '/l_forearm_cam/image_color', '/wide_stereo/right/image_rect_color'],
+                    label : ['Right Arm', 'Left Arm', 'Robot View'],
+                    canvasID : 'mjpegcanvas',
+                    width:320,
+                    height:240,
+                });
+
+                var cmdvel = new ros.Topic({
+                    name : '/base_controller/command',
+                    messageType : 'geometry_msgs/Twist'
+                });
+
+                var pfunction = function(dx,dy) {   
+                    var x = - parseInt(dy)/100.0;
+                    var z = - parseInt(dx)/100.0;
+    
+                    var msg = new ros.Message({                
+                        angular : {
+                            x : 0,
+                            y : 0,
+                            z : z,
+                        },
+                        linear : {
+                            x : x,
+                            y : 0 ,
+                            z : 0,                         
+                        },
+                    });                                    
+
+                    cmdvel.publish(msg);
+                };
+
+                var joystick = new VirtualJoystick({
+                    container : dom.byId('virtualstick'),
+                    mouseSupport : true,     
+                    processMessage : pfunction,
+                });
+            }
+            _DEBUG_ = false;
+            ready(initialize);
+        }
+        );
+</script>
+</head>
+<body class="claro" style="font: 14px Myriad,Helvetica,Tahoma,Arial,clean,sans-serif;">
+	<div id="headers" class="headers">
+        <img class="logo" src="img/logo.jpg"></img>
+        <p class="logo"> Web Navigator</p>
+            <div data-dojo-type="roswidgets.ConnectionPanel"></div>
+	</div>
+    <div id="body" class="middlepanel">
+        <div class="leftbody">
+            <div class="navcanvas" id="nav_canvas" data-dojo-type="yujin_webtools.widgets.NavigationCanvas" data-dojo-props="canvaswidth:640, canvasheight:480"></div>
+        </div>
+        <div class="rightbody">
+            <canvas id="mjpegcanvas" width="320" height="240"> </canvas>
+<!--            <div class="navpopup" id="nav_popup" data-dojo-type="yujin_webtools.widgets.NavigationPopup"></div>-->
+            <canvas id="virtualstick" width="240" height="240"> </canvas>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,21 +1,14 @@
 
-.navcanvas {
-    float:center;
-    border:black 1px solid;
-    margin: 10pt;
-}
-
 .navui-left{
       position:relative;
-      width:55%;
+      width:75%;
       height:100%;
       float:left;
 }
 
 .navui-right{
-    position:relative;
-    width:40%;
-    height:100%;
     float:left;
-    margin:10px;
+    width:20%;
+    height:100%;
+    padding: 10pt;
 }
