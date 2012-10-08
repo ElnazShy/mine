@@ -12,15 +12,24 @@ body {
 	position: relative;	
 }
 
+.webtools {
+    display:inline-block;
+    text-align:center;
+    float:right;
+    position:relative;
+    height:100%;
+}
+
 
 .navpopup {
-    padding-top:2px;
+    padding-top:11px;
     position:relative;
-    display:block;
+    float:left;
 }
 
 .connectionpanel {
-    text-align:right;
+    float:left;
+    position:relative;
     padding-top:10px;
     padding-bottom:10px;
 }
@@ -62,6 +71,7 @@ display:inline-block;
 .headers {
     height:15%;
     overflow:visible;
+    position:relative;
 	margin-top: 10px;
 	border: 1px solid #759DC0;
 	border-top-right-radius: 7px;

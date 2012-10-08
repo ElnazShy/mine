@@ -3,7 +3,7 @@ define(["dojo/_base/declare",
         "dijit/_WidgetBase",
         "dojo/dom",
         "dojo/dom-class",
-        "nav2djs/nav2d",
+        "nav2djs/nav2d_custom",
         "./Loader",
         ],
 function(declare,widgetbase,dom,domClass,Nav2D,Loader)
@@ -13,7 +13,12 @@ function(declare,widgetbase,dom,domClass,Nav2D,Loader)
             canvasid    : null,
             canvaswidth : 640,
             canvasheight : 480,
-            continuous : true,
+            continuous : false,
+            img : null,
+            serverName : '/move_base',
+            mapTopic : '/map',
+            mapMetaTopic : '/map_metadata',
+            initialPoseTopic : '/initialpose',
 
             postCreate : function() {
                 Loader.loadCSS("yujin_webtools/widgets/css/navcanvas.css");
@@ -43,7 +48,13 @@ function(declare,widgetbase,dom,domClass,Nav2D,Loader)
                     width : this.canvas.width,
                     height : this.canvas.height,
                     continuous : this.continuous,
+                    img : this.img,
+                    mapTopic : this.mapTopic,
+                    mapMetaTopic : this.mapMetaTopic,
+                    initialPoseTopic : this.initialPoseTopic,
+                    serverName : this.serverName,
                 });
+                console.log("here");
                 this.nav2d.canvas.dblclick(function(e) {});
             },
 
@@ -57,12 +68,10 @@ function(declare,widgetbase,dom,domClass,Nav2D,Loader)
             },
 
             setGoalClicked : function() {
-                console.log("there");
                 this.nav2d.setmode('goal');
             },
 
             cancelGoalClicked : function() {
-                console.log("ere");
                 this.nav2d.cancel();
             },
 
