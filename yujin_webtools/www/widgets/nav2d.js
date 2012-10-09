@@ -328,11 +328,9 @@
             canvas.addEventListener('click',function(event) {
                         if(nav2D.mode == 'none')
                         {
-                            console.log("None");
                         }
                         else if(nav2D.mode == 'init') 
                         {
-                            console.log("Init pose");
                           var poses = nav2D.getPoseFromEvent(event);
                           if (poses != null) {
                             nav2D.sendInitPose(poses[0], poses[1]);
@@ -341,7 +339,6 @@
                           }
                         }
                         else if(nav2D.mode == 'goal') {
-                            console.log("Set goal");
                           var poses = nav2D.getPoseFromEvent(event);
                           if (poses != null) {
                             nav2D.sendGoalPose(poses[0], poses[1]);
@@ -364,14 +361,12 @@
 
             nav2D.initPosePub = new nav2D.ros.Topic({
                 name : nav2D.initialPoseTopic,
-                type : 'geometry_msgs/PoseWithCovariance',
+                type : 'geometry_msgs/PoseWithCovarianceStamped',
             });
 
             nav2D.sendInitPose = function(x,y) {
                 var pose_msg = new ros.Message({
                     header : {
-                        seq : 0,
-                        stamp : 0,
                         frame_id : '/map'
                     },
                     pose : {
@@ -388,6 +383,7 @@
                                 w : 1,
                             },
                         },
+                        covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
                     },
                 });
                 nav2D.initPosePub.publish(pose_msg);
