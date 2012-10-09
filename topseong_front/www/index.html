@@ -60,9 +60,9 @@
 
                 var mjpeg = new MjpegCanvas({
                     host : '192.168.10.77',
-                    topic : ['/r_forearm_cam/image_color', '/l_forearm_cam/image_color', '/wide_stereo/right/image_rect_color'],
-//                    topic : '/camera/image_raw',
-                    label : ['Right Arm', 'Left Arm', 'Robot View'],
+//                    topic : ['/r_forearm_cam/image_color', '/l_forearm_cam/image_color', '/wide_stereo/right/image_rect_color'],
+                    topic : '/camera/rgb/image_color',
+//                    label : ['Right Arm', 'Left Arm', 'Robot View'],
                     canvasID : 'mjpegcanvas',
                     width:320,
                     height:240,
