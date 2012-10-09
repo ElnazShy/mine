@@ -3,7 +3,7 @@ define(["dojo/_base/declare",
         "dijit/_WidgetBase",
         "dojo/dom",
         "dojo/dom-class",
-        "nav2djs/nav2d_custom",
+        "./nav2d",
         "./Loader",
         ],
 function(declare,widgetbase,dom,domClass,Nav2D,Loader)
@@ -54,8 +54,6 @@ function(declare,widgetbase,dom,domClass,Nav2D,Loader)
                     initialPoseTopic : this.initialPoseTopic,
                     serverName : this.serverName,
                 });
-                console.log("here");
-                this.nav2d.canvas.dblclick(function(e) {});
             },
 
             connectFunctions : function() {
