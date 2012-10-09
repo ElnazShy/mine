@@ -1,5 +1,6 @@
 
 define(["dojo/_base/declare",
+        "dojo/_base/lang",
         "dijit/_WidgetBase",
         "dijit/_TemplatedMixin",
         "dojo/dom",
@@ -7,7 +8,7 @@ define(["dojo/_base/declare",
         "yujin_webtools/widgets/Loader",
         "dojo/text!./templates/Arrows.html",
         ],
-function(declare, widgetbase,_TemplatedMixin,dom,domClass,Loader,template)
+function(declare, lang,widgetbase,_TemplatedMixin,dom,domClass,Loader,template)
 {
     var ctrl = declare("yujin_webtools.controller.Arrows",[widgetbase, _TemplatedMixin], {
             templateString : template,
@@ -24,12 +25,15 @@ function(declare, widgetbase,_TemplatedMixin,dom,domClass,Loader,template)
                     name : this.topic,
                     messageType : this.messageType,
                 });
+                this.msg = new ros.Message({ angular : this.angular, linear : this.linear});
 
                 // Set the default linear and angular variables
         	    this.reset();
 	    
         	    // Create the controls
         		this.createButtons();
+                
+                window.setInterval(lang.hitch(this,this.pub),500);
             },
 
             createButtons : function() {
@@ -87,8 +91,9 @@ function(declare, widgetbase,_TemplatedMixin,dom,domClass,Loader,template)
             },
 
             pub: function() {
-                var msg = new ros.Message({ angular : this.angular, linear : this.linear});
-                this.publisher.publish(msg);
+                this.msg.angular = this.angular;
+                this.msg.linear = this.linear;
+                this.publisher.publish(this.msg);
             },
 
         });
