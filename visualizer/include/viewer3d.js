@@ -64,8 +64,6 @@
 
       // highlights the receiver of mouse events
       highlighter = new ThreeInteraction.Highlighter(mouseHandler);
-      console.log("Here");
-
     };
 
     viewer3d.animate = function() {
@@ -86,7 +84,13 @@
     viewer3d.resize = function(width,height)
     {
       renderer.setSize(width,height);
-    }
+    };
+
+    viewer3d.addObject = function(obj)
+    {
+//      selectableObjs.add(obj);
+      scene.add(obj);
+    };
   };
   return Viewer3D;
 }));
