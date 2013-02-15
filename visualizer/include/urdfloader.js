@@ -1,18 +1,30 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['three', 'meshloader'], factory);
+    define(['three','urdf','meshloader'], factory);
   }
   else {
-    root.UrdfLoader = factory(root.THREE, root.MeshLoader);
+    root.UrdfLoader = factory(root.THREE, root.Urdf,root.MeshLoader);
   }
-}(this, function(THREE, MeshLoader) {
-  var UrdfLoader = function(meshloader){
-    var urdfLoader = this;
+}(this, function(THREE, Urdf, MeshLoader) {
+  var UrdfLoader = {};
 
-    urdfLoader.load = function(objroot) {
+  UrdfLoader.load = function(objroot,meshLoader) {
+    
+      var urdf_model = new Urdf();
+      var that = this;
       
       function urdfReady() {
-        var 
+        // load all models
+        var links = urdf_model.getLinks().values();
+        for(var l in links)
+        {
+          var link = links[l];
+          if(!link.visual) continue;
+          if(!link.visual.geometry) continue;
+          if(link.visual.geometry.type == link.visual.geometry.GeometryTypes.MESH) {
+            var frameId = new String("/"+link.name);
+          }
+        }
       }
 
       
