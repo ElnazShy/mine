@@ -855,6 +855,8 @@ THREE.ColladaLoader = function () {
 		obj.quaternion = props[ 1 ];
 		obj.useQuaternion = true;
 		obj.scale = props[ 2 ];
+    obj.position.multiplyScalar(colladaUnit);
+		obj.scale.multiplyScalar(colladaUnit);
 
 		if ( options.centerGeometry && obj.geometry ) {
 
